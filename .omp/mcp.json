@@ -1,0 +1,74 @@
+{
+  "mcpServers": {
+    "AgentsRoom-MCP": {
+      "command": "node",
+      "args": [
+        "/Applications/AgentsRoom.app/Contents/Resources/app-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_PROJECT_ID": "proj-1791464840930-wrxtyd",
+        "AR_PROJECT_PATH": "/Users/mac/Documents/Projects/grossmart",
+        "AR_API_BASE_URL": "https://agentsroom.dev",
+        "AR_SETTINGS_FILE": "/Users/mac/.agentsroom/settings.json",
+        "AR_APP_VERSION": "1.202.0",
+        "AR_BRIDGE_FILE": "/Users/mac/.agentsroom/browser-bridge.json"
+      }
+    },
+    "AgentsRoom-Test-Runner": {
+      "command": "node",
+      "args": [
+        "/Applications/AgentsRoom.app/Contents/Resources/test-runner-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_BROWSER_BRIDGE_FILE": "/Users/mac/.agentsroom/browser-bridge.json",
+        "AR_BROWSER_PROJECT_ID": "proj-1791464840930-wrxtyd",
+        "AR_PROJECT_PATH": "/Users/mac/Documents/Projects/grossmart"
+      }
+    },
+    "AgentsRoom-QA-Tester": {
+      "command": "node",
+      "args": [
+        "/Applications/AgentsRoom.app/Contents/Resources/qa-tester-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_BROWSER_BRIDGE_FILE": "/Users/mac/.agentsroom/browser-bridge.json",
+        "AR_BROWSER_PROJECT_ID": "proj-1791464840930-wrxtyd"
+      }
+    },
+    "AgentsRoom-Browser": {
+      "command": "node",
+      "args": [
+        "/Applications/AgentsRoom.app/Contents/Resources/browser-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_BROWSER_BRIDGE_FILE": "/Users/mac/.agentsroom/browser-bridge.json",
+        "AR_BROWSER_PROJECT_ID": "proj-1791464840930-wrxtyd"
+      }
+    },
+    "AgentsRoom-Chrome": {
+      "command": "node",
+      "args": [
+        "/Applications/AgentsRoom.app/Contents/Resources/browser-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_BROWSER_BRIDGE_FILE": "/Users/mac/.agentsroom/browser-bridge.json",
+        "AR_BROWSER_PROJECT_ID": "proj-1791464840930-wrxtyd",
+        "AR_BROWSER_KIND": "chrome"
+      }
+    },
+    "agentsroom-team": {
+      "command": "node",
+      "args": [
+        "/Applications/AgentsRoom.app/Contents/Resources/team-mcp-server.cjs"
+      ],
+      "env": {
+        "AGENTSROOM_TEAM_BAKED_RUN_ID": "run-1791466999155-1xmn7s",
+        "AGENTSROOM_TEAM_BAKED_NODE_ID": "n-test",
+        "AGENTSROOM_TEAM_BAKED_AGENT_ID": "agent-1791469999707-0jhbeq",
+        "AGENTSROOM_TEAM_BAKED_WORKSPACE": "/Users/mac/Documents/Projects/grossmart",
+        "AGENTSROOM_TEAM_BAKED_STATE_ROOT": "/Users/mac/Documents/Projects/grossmart",
+        "AGENTSROOM_TEAM_BAKED_ROLE": "qa"
+      }
+    }
+  }
+}
