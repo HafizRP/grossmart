@@ -88,30 +88,41 @@ export const ReportsIndex: React.FC<ReportsIndexProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border-2 border-slate-200">
               <input
                 type="date"
                 value={startDateInput}
                 onChange={(e) => setStartDateInput(e.target.value)}
-                className="min-h-[46px] px-3 font-bold border-2 border-gray-300 rounded-xl"
+                className="min-h-[48px] px-3 font-bold border-2 border-slate-300 rounded-xl bg-white text-slate-900"
               />
-              <span className="font-bold text-gray-500">s/d</span>
+              <span className="font-black text-slate-500">s/d</span>
               <input
                 type="date"
                 value={endDateInput}
                 onChange={(e) => setEndDateInput(e.target.value)}
-                className="min-h-[46px] px-3 font-bold border-2 border-gray-300 rounded-xl"
+                className="min-h-[48px] px-3 font-bold border-2 border-slate-300 rounded-xl bg-white text-slate-900"
               />
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                sound.playClick();
+                window.location.href = `/owner/reports?start_date=${startDateInput}&end_date=${endDateInput}`;
+              }}
+              className="min-h-[48px] px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-sm cursor-pointer transition-all"
+            >
+              🔍 Terapkan
+            </button>
 
             <Button
               variant="info"
               size="md"
               soundFeedback="click"
               onClick={handlePrint}
-              className="font-black"
+              className="min-h-[48px] font-black rounded-xl"
             >
-              Cetak Laporan
+              🖨️ Cetak Laporan
             </Button>
           </div>
         </div>

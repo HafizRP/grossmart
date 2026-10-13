@@ -16,3 +16,20 @@ yarn-error.log
 .idea
 .vscode
 .agentsroom
+.mcp.json
+
+# Temporary Word locks
+~$*.doc*
+
+# Proposal audit, backup, and OMP session artifacts
+.backup/
+.omp_sessions*/
+.audit_session
+.audit_state
+.generate_session
+audit.log
+generate.log
+*.lock.os
+__pycache__/
+*.pyc
+.audit_logs/

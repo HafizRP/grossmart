@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -e
+
+# Izinkan bypass global jika SKIP_PROPOSAL_HOOKS=1
+if [ "${SKIP_PROPOSAL_HOOKS:-0}" = "1" ]; then
+  exit 0
+fi
+
+# Cek apakah ada perubahan kode atau proposal yang di-stage
+STAGED_CODE=$(git diff --cached --name-only -- "app/" "database/" "resources/" "routes/" || true)
+STAGED_DOCS=$(git diff --cached --name-only -- "docs/Transformasi Digital/" || true)
+
+if [ -n "$STAGED_CODE" ] || [ -n "$STAGED_DOCS" ]; then
+  echo -e "\n[pre-commit hook] Terdeteksi perubahan yang mempengaruhi proposal:"
+  if [ -n "$STAGED_CODE" ]; then
+    echo "  - Perubahan kode aplikasi (app/, database/, resources/, routes/)"
+  fi
+  if [ -n "$STAGED_DOCS" ]; then
+    echo "  - Perubahan berkas proposal (docs/Transformasi Digital/)"
+  fi
+
+  echo -e "\n[pre-commit hook] Menjalankan verifikasi proposal..."
+  echo "[pre-commit hook] Bypass: 'git commit --no-verify' atau 'SKIP_PROPOSAL_HOOKS=1 git commit'"
+  echo "[pre-commit hook] Bypass parsial: 'SKIP_PROPOSAL_AUDIT=1' atau 'SKIP_PROPOSAL_GENERATE=1'\n"
+
+  # 1. Jalankan generate proposal: sync kode ke markdown & bikin docs (jika tidak di-bypass)
+  if [ "${SKIP_PROPOSAL_GENERATE:-0}" != "1" ]; then
+    echo -e "[pre-commit hook] >>> 1. Menjalankan generate proposal (./scripts/generate_proposal.sh)..."
+    ./scripts/generate_proposal.sh
+  else
+    echo -e "[pre-commit hook] >>> 1. Generate proposal dilewati (SKIP_PROPOSAL_GENERATE=1)."
+  fi
+
+  # 2. Jalankan audit proposal: validasi kepatuhan kode vs markdown vs docx (jika tidak di-bypass)
+  if [ "${SKIP_PROPOSAL_AUDIT:-0}" != "1" ]; then
+    echo -e "\n[pre-commit hook] >>> 2. Menjalankan audit proposal (./scripts/audit_proposal.sh)..."
+    ./scripts/audit_proposal.sh
+  else
+    echo -e "\n[pre-commit hook] >>> 2. Audit proposal dilewati (SKIP_PROPOSAL_AUDIT=1)."
+  fi
+
+  # Otomatis stage hasil perubahan berkas markdown dan dokumen docx
+  git add "docs/Transformasi Digital/"
+  echo -e "\n[pre-commit hook] Berkas proposal dan dokumen DOCX telah disinkronkan & di-stage otomatis.\n"
+fi
+
+exit 0

@@ -52,151 +52,171 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({
   user_name = 'Pemilik Toko',
 }) => {
   return (
-    <OwnerLayout title="Ringkasan Toko - Grossmart" userName={user_name}>
-      <div className="space-y-6">
-        {/* Salam & Tombol Pintas Cepat */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border-2 border-gray-200 shadow-sm">
+    <OwnerLayout title="Ringkasan Warung - Grossmart" userName={user_name}>
+      <div className="space-y-6 max-w-7xl">
+        {/* Banner Selamat Datang & Pintasan Cepat */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-800 shadow-xl">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">
-              Selamat Datang, {user_name}!
-            </h2>
-            <p className="text-base font-bold text-gray-600 mt-0.5">
-              Pantau perkembangan omzet, catatan bon pembeli, dan ketersediaan stok warung Anda.
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl">👋</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Selamat Datang, {user_name}!
+              </h2>
+            </div>
+            <p className="text-sm font-bold text-slate-400">
+              Pantau arus omzet, sisa bon pembeli, dan barang dagangan yang perlu segera dikulak.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/pos"
-              className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-base shadow-md border-b-4 border-emerald-800"
+              className="min-h-[50px] px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-sm shadow-lg border border-emerald-500 transition-all flex items-center gap-2 cursor-pointer"
             >
-              Buka Kasir (POS)
+              <span>🛒</span>
+              <span>Layar Kasir</span>
             </Link>
             <Link
               href="/owner/products"
-              className="px-4 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold text-base border-2 border-gray-300"
+              className="min-h-[50px] px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-black text-sm border border-slate-700 transition-all flex items-center gap-2 cursor-pointer"
             >
-              Tambah Produk
+              <span>📦</span>
+              <span>Kelola Barang</span>
             </Link>
           </div>
         </div>
 
-        {/* 5 Kartu Metrik Jumbo Ramah Penglihatan */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        {/* 5 Kartu Metrik Ringkasan Jumbo */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
           {/* 1. Omzet Hari Ini */}
-          <div className="p-5 bg-white rounded-3xl border-3 border-emerald-500 shadow-sm flex flex-col justify-between">
+          <div className="p-5 bg-gradient-to-br from-emerald-600 to-teal-800 text-white rounded-3xl border-2 border-emerald-500 shadow-lg flex flex-col justify-between">
             <div>
-              <span className="text-xs uppercase font-black text-emerald-800 tracking-wider block">
-                OMZET PENJUALAN HARI INI
+              <span className="text-xs uppercase font-black tracking-wider text-emerald-200 block">
+                💰 OMZET KAS HARI INI
               </span>
-              <span className="text-2xl sm:text-3xl font-black text-emerald-700 block mt-2">
+              <span className="text-2xl sm:text-3xl font-black block mt-1.5 tabular-nums tracking-tight">
                 {formatRupiah(metrics.today_revenue)}
               </span>
             </div>
-            <span className="text-xs font-bold text-gray-500 mt-3 pt-2 border-t border-gray-100">
-              {metrics.today_transactions_count} Transaksi Berhasil
+            <span className="text-xs font-bold text-emerald-200 mt-3 pt-2 border-t border-emerald-500/50 block">
+              ✓ {metrics.today_transactions_count} Nota Sukses
             </span>
           </div>
 
           {/* 2. Total Bon Piutang Pembeli */}
-          <div className="p-5 bg-white rounded-3xl border-3 border-amber-400 shadow-sm flex flex-col justify-between">
+          <div className="p-5 bg-slate-900 rounded-3xl border-2 border-amber-500/40 shadow-sm flex flex-col justify-between">
             <div>
-              <span className="text-xs uppercase font-black text-amber-900 tracking-wider block">
-                BUKU BON / UTANG PEMBELI
+              <span className="text-xs uppercase font-black text-amber-400 tracking-wider block">
+                📖 BUKU BON (UTANG WARGA)
               </span>
-              <span className="text-2xl sm:text-3xl font-black text-amber-700 block mt-2">
+              <span className="text-2xl sm:text-3xl font-black text-amber-300 block mt-1.5 tabular-nums tracking-tight">
                 {formatRupiah(metrics.total_customer_receivables)}
               </span>
             </div>
             <Link
               href="/owner/reports"
-              className="text-xs font-black text-amber-800 hover:underline mt-3 pt-2 border-t border-gray-100"
+              className="min-h-[36px] text-xs font-black text-amber-400 hover:text-amber-300 hover:underline mt-3 pt-2 border-t border-slate-800 flex items-center justify-between"
             >
-              Lihat Rincian Buku Bon &rarr;
+              <span>Buka Rincian Bon</span>
+              <span>➔</span>
             </Link>
           </div>
 
           {/* 3. Utang ke Pemasok / Agen */}
-          <div className="p-5 bg-white rounded-3xl border-3 border-blue-400 shadow-sm flex flex-col justify-between">
+          <div className="p-5 bg-slate-900 rounded-3xl border-2 border-blue-500/40 shadow-sm flex flex-col justify-between">
             <div>
-              <span className="text-xs uppercase font-black text-blue-900 tracking-wider block">
-                UTANG KULAKAN KE AGEN
+              <span className="text-xs uppercase font-black text-blue-400 tracking-wider block">
+                🚚 UTANG KULAKAN AGEN
               </span>
-              <span className="text-2xl sm:text-3xl font-black text-blue-700 block mt-2">
+              <span className="text-2xl sm:text-3xl font-black text-blue-300 block mt-1.5 tabular-nums tracking-tight">
                 {formatRupiah(metrics.total_supplier_payables)}
               </span>
             </div>
-            <span className="text-xs font-bold text-gray-500 mt-3 pt-2 border-t border-gray-100">
-              Faktur Masuk Belum Lunas
+            <span className="text-xs font-bold text-slate-400 mt-3 pt-2 border-t border-slate-800 block">
+              Faktur Belum Lunas
             </span>
           </div>
 
           {/* 4. Peringatan Stok Menipis */}
-          <div className="p-5 bg-white rounded-3xl border-3 border-rose-400 shadow-sm flex flex-col justify-between">
+          <div className="p-5 bg-slate-900 rounded-3xl border-2 border-rose-500/40 shadow-sm flex flex-col justify-between">
             <div>
-              <span className="text-xs uppercase font-black text-rose-900 tracking-wider block">
-                PERINGATAN STOK MENIPIS
+              <span className="text-xs uppercase font-black text-rose-400 tracking-wider block">
+                ⚠️ STOK HAMPIR HABIS
               </span>
-              <span className="text-2xl sm:text-3xl font-black text-rose-600 block mt-2">
-                {metrics.low_stock_count} Barang
+              <span className="text-2xl sm:text-3xl font-black text-rose-300 block mt-1.5 tabular-nums tracking-tight">
+                {metrics.low_stock_count} Macam
               </span>
             </div>
-            <span className="text-xs font-bold text-gray-500 mt-3 pt-2 border-t border-gray-100">
-              Perlu Segera Kulakan Ulang
-            </span>
+            <Link
+              href="/owner/products"
+              className="min-h-[36px] text-xs font-black text-rose-400 hover:text-rose-300 hover:underline mt-3 pt-2 border-t border-slate-800 flex items-center justify-between"
+            >
+              <span>Periksa Kulakan</span>
+              <span>➔</span>
+            </Link>
           </div>
 
-          {/* 5. Barang Mendekati Kadaluarsa */}
-          <div className="p-5 bg-white rounded-3xl border-3 border-purple-400 shadow-sm flex flex-col justify-between">
+          {/* 5. Barang Mendekati Kedaluwarsa */}
+          <div className="p-5 bg-slate-900 rounded-3xl border-2 border-purple-500/40 shadow-sm flex flex-col justify-between">
             <div>
-              <span className="text-xs uppercase font-black text-purple-900 tracking-wider block">
-                MENDEKATI KADALUARSA
+              <span className="text-xs uppercase font-black text-purple-400 tracking-wider block">
+                ⏳ MENDEKATI KEDALUWARSA
               </span>
-              <span className="text-2xl sm:text-3xl font-black text-purple-700 block mt-2">
-                {metrics.expiring_soon_count} Barang
+              <span className="text-2xl sm:text-3xl font-black text-purple-300 block mt-1.5 tabular-nums tracking-tight">
+                {metrics.expiring_soon_count} Macam
               </span>
             </div>
-            <span className="text-xs font-bold text-gray-500 mt-3 pt-2 border-t border-gray-100">
-              Cek Rak & Lakukan Diskon Cuci Gudang
+            <span className="text-xs font-bold text-slate-400 mt-3 pt-2 border-t border-slate-800 block">
+              Cek Rak & Lakukan Obral
             </span>
           </div>
         </div>
 
-        {/* Baris Konten: Transaksi Terbaru & Daftar Stok Menipis */}
+        {/* Aktivitas Nota Masuk & Barang Kritis */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Kolom Kiri: Riwayat Transaksi Hari Ini */}
-          <div className="lg:col-span-7 bg-white rounded-3xl border-2 border-gray-200 p-5 shadow-sm space-y-4">
+          <div className="lg:col-span-7 bg-slate-900 rounded-3xl border border-slate-800 p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-black text-gray-900">
-                Aktivitas Nota Penjualan Kasir Terkini
-              </h3>
-              <Link href="/sales" className="text-sm font-extrabold text-emerald-700 hover:underline">
-                Lihat Semua &rarr;
+              <div>
+                <h3 className="text-xl font-black text-white">
+                  Aktivitas Nota Penjualan Kasir
+                </h3>
+                <span className="text-xs font-bold text-slate-400">
+                  Transaksi masuk terkini hari ini
+                </span>
+              </div>
+              <Link
+                href="/sales"
+                className="min-h-[40px] px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-black text-emerald-400 border border-slate-700 flex items-center gap-1 transition-all"
+              >
+                <span>Lihat Semua Nota</span>
+                <span>➔</span>
               </Link>
             </div>
 
             {recent_transactions.length === 0 ? (
-              <div className="p-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                <p className="text-base font-bold text-gray-500">Belum ada transaksi penjualan hari ini</p>
+              <div className="p-8 text-center bg-slate-950/60 rounded-2xl border border-dashed border-slate-800">
+                <span className="text-3xl block mb-1">🧾</span>
+                <p className="text-sm font-bold text-slate-400">Belum ada transaksi penjualan hari ini</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-slate-800 space-y-2">
                 {recent_transactions.map((tx) => (
-                  <div key={tx.id} className="py-3 flex items-center justify-between gap-3">
+                  <div key={tx.id} className="pt-2.5 first:pt-0 flex items-center justify-between gap-3">
                     <div>
-                      <span className="font-mono font-black text-sm text-gray-900 block">
+                      <span className="font-mono font-black text-base text-white block leading-tight">
                         {tx.invoice_number}
                       </span>
-                      <span className="text-xs font-bold text-gray-500 block">
-                        Kasir: {tx.cashier_name} &bull; {formatTanggalWaktu(tx.created_at)}
+                      <span className="text-xs font-bold text-slate-400 block mt-0.5">
+                        Kasir: <strong className="text-slate-200">{tx.cashier_name}</strong> &bull; {formatTanggalWaktu(tx.created_at)}
                       </span>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-base sm:text-lg font-black text-emerald-700 block">
+                      <span className="text-base sm:text-lg font-black text-emerald-400 block tabular-nums">
                         {formatRupiah(tx.total_amount)}
                       </span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-black bg-gray-100 text-gray-700 uppercase">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-slate-800 text-slate-300 uppercase border border-slate-700">
                         {tx.payment_method}
                       </span>
                     </div>
@@ -206,43 +226,48 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({
             )}
           </div>
 
-          {/* Kolom Kanan: Daftar Stok Kritis Menipis */}
-          <div className="lg:col-span-5 bg-white rounded-3xl border-2 border-gray-200 p-5 shadow-sm space-y-4">
+          {/* Kolom Kanan: Daftar Barang Perlu Kulakan Ulang */}
+          <div className="lg:col-span-5 bg-slate-900 rounded-3xl border border-slate-800 p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-black text-gray-900">
-                Daftar Barang Segera Habis
-              </h3>
-              <Link href="/owner/products" className="text-sm font-extrabold text-rose-700 hover:underline">
-                Kelola Stok &rarr;
+              <div>
+                <h3 className="text-xl font-black text-white">
+                  Daftar Kulakan Kritis
+                </h3>
+                <span className="text-xs font-bold text-slate-400">
+                  Stok barang hampir habis di rak
+                </span>
+              </div>
+              <Link
+                href="/owner/products"
+                className="min-h-[40px] px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-black text-rose-400 border border-slate-700 flex items-center gap-1 transition-all"
+              >
+                <span>Kelola Stok</span>
+                <span>➔</span>
               </Link>
             </div>
 
             {low_stock_products.length === 0 ? (
-              <div className="p-8 text-center bg-emerald-50 rounded-2xl border-2 border-emerald-200">
-                <p className="text-base font-bold text-emerald-800">Semua stok barang aman dan tercukupi!</p>
+              <div className="p-8 text-center bg-slate-950/60 rounded-2xl border border-slate-800">
+                <span className="text-3xl block mb-1">🎉</span>
+                <p className="text-base font-black text-emerald-400">Semua Stok Barang Aman</p>
+                <p className="text-xs text-slate-500 mt-0.5">Tidak ada barang yang berada di bawah batas minimum</p>
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="divide-y divide-slate-800 space-y-2">
                 {low_stock_products.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-3 bg-rose-50 rounded-2xl border border-rose-200 flex items-center justify-between"
-                  >
-                    <div>
-                      <h4 className="text-sm sm:text-base font-black text-rose-950">
+                  <div key={item.id} className="pt-2.5 first:pt-0 flex items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <span className="font-black text-sm sm:text-base text-white block truncate">
                         {item.name}
-                      </h4>
-                      <span className="text-xs font-bold text-rose-700">
-                        SKU: {item.sku}
+                      </span>
+                      <span className="text-xs font-bold text-slate-400 block">
+                        SKU: {item.sku} &bull; Batas: {item.min_stock_alert} {item.unit}
                       </span>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-base font-black text-rose-700 block">
-                        Sisa: {item.current_stock} {item.unit}
-                      </span>
-                      <span className="text-[10px] font-bold text-rose-500">
-                        Batas Min: {item.min_stock_alert}
+                      <span className="px-2.5 py-1 rounded-xl text-xs font-black bg-rose-950 text-rose-300 border border-rose-800 block">
+                        Sisa {item.current_stock} {item.unit}
                       </span>
                     </div>
                   </div>

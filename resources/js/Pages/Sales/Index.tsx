@@ -162,14 +162,14 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b-2 border-gray-200 text-xs font-black uppercase text-gray-900">
+                <tr className="bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-wider">
                   <th className="p-4">No. Nota</th>
                   <th className="p-4">Waktu & Kasir</th>
                   <th className="p-4">Pembeli</th>
                   <th className="p-4">Metode</th>
                   <th className="p-4">Total Belanja</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Aksi</th>
+                  <th className="p-4">Status Nota</th>
+                  <th className="p-4 text-right">Tindakan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm font-bold text-gray-800">
@@ -221,20 +221,20 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
                         </span>
                       </td>
 
-                      <td className="p-4 text-right space-x-2">
+                      <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
                         <button
                           type="button"
                           onClick={() => setSelectedSale(s)}
-                          className="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-black cursor-pointer"
+                          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 text-xs font-black cursor-pointer transition-all"
                         >
-                          Rincian
+                          📄 Rincian
                         </button>
                         <button
                           type="button"
                           onClick={() => handleOpenReceipt(s)}
-                          className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 text-xs font-black cursor-pointer"
+                          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200 text-xs font-black cursor-pointer transition-all"
                         >
-                          Cetak Struk
+                          🖨️ Cetak
                         </button>
                         {is_owner && s.status === 'COMPLETED' && (
                           <button
@@ -244,9 +244,9 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
                               setVoidSale(s);
                               setVoidReason('');
                             }}
-                            className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-black cursor-pointer"
+                            className="min-h-[44px] px-3.5 py-2 rounded-xl bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200 text-xs font-black cursor-pointer transition-all"
                           >
-                            Batal Nota
+                            🚫 Batal Nota
                           </button>
                         )}
                       </td>

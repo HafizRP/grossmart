@@ -10,7 +10,7 @@
         "AR_PROJECT_PATH": "/Users/mac/Documents/Projects/grossmart",
         "AR_API_BASE_URL": "https://agentsroom.dev",
         "AR_SETTINGS_FILE": "/Users/mac/.agentsroom/settings.json",
-        "AR_APP_VERSION": "1.202.0",
+        "AR_APP_VERSION": "1.203.0",
         "AR_BRIDGE_FILE": "/Users/mac/.agentsroom/browser-bridge.json"
       }
     },
@@ -62,12 +62,12 @@
         "/Applications/AgentsRoom.app/Contents/Resources/team-mcp-server.cjs"
       ],
       "env": {
-        "AGENTSROOM_TEAM_BAKED_RUN_ID": "run-1791466999155-1xmn7s",
-        "AGENTSROOM_TEAM_BAKED_NODE_ID": "n-test",
-        "AGENTSROOM_TEAM_BAKED_AGENT_ID": "agent-1791469999707-0jhbeq",
+        "AGENTSROOM_TEAM_BAKED_RUN_ID": "run-1791540025414-0f3pqv",
+        "AGENTSROOM_TEAM_BAKED_NODE_ID": "n-lead",
+        "AGENTSROOM_TEAM_BAKED_AGENT_ID": "agent-1791540025663-1wzzd6",
         "AGENTSROOM_TEAM_BAKED_WORKSPACE": "/Users/mac/Documents/Projects/grossmart",
         "AGENTSROOM_TEAM_BAKED_STATE_ROOT": "/Users/mac/Documents/Projects/grossmart",
-        "AGENTSROOM_TEAM_BAKED_ROLE": "qa"
+        "AGENTSROOM_TEAM_BAKED_ROLE": "pm"
       }
     }
   }

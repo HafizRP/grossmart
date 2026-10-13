@@ -27,6 +27,10 @@ class Product extends Model
         'is_active',
     ];
 
+    protected $appends = [
+        'sku',
+    ];
+
     protected $casts = [
         'selling_price' => 'integer',
         'cost_price' => 'integer',
@@ -36,6 +40,11 @@ class Product extends Model
         'expiry_date' => 'date',
         'is_active' => 'boolean',
     ];
+
+    public function getSkuAttribute(): string
+    {
+        return $this->barcode ?? ('PRD-' . $this->id);
+    }
 
     public function category()
     {

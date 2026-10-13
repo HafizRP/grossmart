@@ -123,27 +123,27 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2.5">
               <button
                 type="button"
                 onClick={() => handleTestSound('beep')}
-                className="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-emerald-50 text-gray-800 font-extrabold text-sm border-2 border-gray-300 cursor-pointer"
+                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-800 font-black text-sm border-2 border-slate-300 cursor-pointer transition-all active:scale-95"
               >
-                Tes Bip Barcode
+                🔊 Tes Bip Barcode
               </button>
               <button
                 type="button"
                 onClick={() => handleTestSound('error')}
-                className="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-rose-50 text-gray-800 font-extrabold text-sm border-2 border-gray-300 cursor-pointer"
+                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-800 font-black text-sm border-2 border-slate-300 cursor-pointer transition-all active:scale-95"
               >
-                Tes Buzz Salah
+                ⚠️ Tes Buzz Salah
               </button>
               <button
                 type="button"
                 onClick={() => handleTestSound('chime')}
-                className="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-blue-50 text-gray-800 font-extrabold text-sm border-2 border-gray-300 cursor-pointer"
+                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-800 font-black text-sm border-2 border-slate-300 cursor-pointer transition-all active:scale-95"
               >
-                Tes Chime Lunas
+                🔔 Tes Chime Lunas
               </button>
             </div>
           </div>

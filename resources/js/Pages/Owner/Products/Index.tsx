@@ -178,9 +178,9 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase();
       return (
-        p.name.toLowerCase().includes(q) ||
-        p.sku.toLowerCase().includes(q) ||
-        (p.barcode && p.barcode.toLowerCase().includes(q))
+        (p.name ? p.name.toLowerCase().includes(q) : false) ||
+        (p.sku ? p.sku.toLowerCase().includes(q) : false) ||
+        (p.barcode ? p.barcode.toLowerCase().includes(q) : false)
       );
     }
     return true;
@@ -278,19 +278,19 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
           </div>
         </div>
 
-        {/* Tabel Produk */}
-        <div className="bg-white rounded-3xl border-2 border-gray-200 overflow-hidden shadow-sm">
+        {/* Mode Tabel (Tablet & Desktop: md:block) */}
+        <div className="hidden md:block bg-white rounded-3xl border-3 border-slate-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b-2 border-gray-200 text-gray-900 text-xs sm:text-sm font-black uppercase tracking-wider">
+                <tr className="bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-wider">
                   <th className="p-4">Barang / SKU</th>
                   <th className="p-4">Kategori</th>
-                  <th className="p-4">HPP Modal</th>
+                  <th className="p-4">Harga Kulak</th>
                   <th className="p-4">Harga Jual</th>
                   <th className="p-4">Grosir</th>
-                  <th className="p-4">Stok</th>
-                  <th className="p-4 text-right">Aksi</th>
+                  <th className="p-4">Sisa Stok</th>
+                  <th className="p-4 text-right">Tindakan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm font-bold text-gray-800">
@@ -350,39 +350,39 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
                         </span>
                       </td>
 
-                      <td className="p-4 text-right space-x-1">
+                      <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
                         {activeTab === 'active' ? (
                           <>
                             <button
                               type="button"
                               onClick={() => setBarcodePrintProduct(p)}
-                              className="px-2.5 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-black cursor-pointer"
+                              className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black border border-slate-300 cursor-pointer transition-all"
                               title="Cetak label barcode rak"
                             >
-                              Barcode
+                              🏷️ Barcode
                             </button>
                             <button
                               type="button"
                               onClick={() => openEditModal(p)}
-                              className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-black cursor-pointer"
+                              className="min-h-[44px] px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-black border border-blue-300 cursor-pointer transition-all"
                             >
-                              Ubah
+                              ✏️ Ubah
                             </button>
                             <button
                               type="button"
                               onClick={() => handleDeleteProduct(p)}
-                              className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-black cursor-pointer"
+                              className="min-h-[44px] px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-black border border-rose-300 cursor-pointer transition-all"
                             >
-                              Hapus
+                              🗑️ Hapus
                             </button>
                           </>
                         ) : (
                           <button
                             type="button"
                             onClick={() => handleRestoreProduct(p)}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-black cursor-pointer"
+                            className="min-h-[44px] px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black cursor-pointer transition-all"
                           >
-                            Pulihkan Data
+                            ♻️ Pulihkan
                           </button>
                         )}
                       </td>
@@ -392,6 +392,78 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Mode Kartu Sentuh Responsif (Khusus Ponsel: md:hidden) */}
+        <div className="md:hidden space-y-2.5">
+          {filteredProducts.length === 0 ? (
+            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-400 font-bold">
+              Tidak ada data barang yang sesuai
+            </div>
+          ) : (
+            filteredProducts.map((p) => (
+              <div key={p.id} className="p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="text-base font-black text-slate-900 leading-snug">{p.name}</h4>
+                    <span className="text-xs font-mono text-slate-500">SKU: {p.sku} {p.barcode ? `• Barcode: ${p.barcode}` : ''}</span>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-xl text-xs font-black shrink-0 ${
+                      p.current_stock <= 0
+                        ? 'bg-rose-100 text-rose-900'
+                        : p.current_stock <= p.min_stock_alert
+                        ? 'bg-amber-100 text-amber-950'
+                        : 'bg-emerald-100 text-emerald-900'
+                    }`}
+                  >
+                    {p.current_stock} {p.unit}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-baseline pt-2 border-t border-slate-100">
+                  <span className="text-xs font-bold text-slate-500">Modal: {formatRupiah(p.cost_price)}</span>
+                  <span className="text-lg font-black text-emerald-700">{formatRupiah(p.selling_price)} / {p.unit}</span>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                  {activeTab === 'active' ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setBarcodePrintProduct(p)}
+                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-slate-100 font-black text-xs text-slate-800 border border-slate-200 flex items-center justify-center gap-1"
+                      >
+                        🏷️ Barcode
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(p)}
+                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-blue-50 font-black text-xs text-blue-800 border border-blue-200 flex items-center justify-center gap-1"
+                      >
+                        ✏️ Ubah
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteProduct(p)}
+                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-rose-50 font-black text-xs text-rose-800 border border-rose-200 flex items-center justify-center gap-1"
+                      >
+                        🗑️ Hapus
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleRestoreProduct(p)}
+                      className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-emerald-600 text-white font-black text-xs flex items-center justify-center gap-1"
+                    >
+                      ♻️ Pulihkan Data
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

@@ -229,7 +229,9 @@ export const PosIndex: React.FC<PosIndexProps> = ({
 
           // Cari produk berdasarkan barcode atau SKU
           const found = products.find(
-            (p) => p.barcode === scannedCode || p.sku.toLowerCase() === scannedCode.toLowerCase()
+            (p) =>
+              (p.barcode && p.barcode === scannedCode) ||
+              (p.sku ? p.sku.toLowerCase() === scannedCode.toLowerCase() : false)
           );
 
           if (found) {
@@ -384,23 +386,10 @@ export const PosIndex: React.FC<PosIndexProps> = ({
       onOpenCashDrop={() => setIsCashDropOpen(true)}
       onCloseShift={() => router.visit(`/shifts/${shift?.id}/close`)}
     >
-      {/* Banner Shortcut Keyboard Kasir (Desktop/Tablet) */}
-      <div className="hidden sm:flex items-center justify-between px-4 py-2 bg-emerald-800 text-white rounded-2xl mb-3 shadow text-xs sm:text-sm font-extrabold select-none">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5"><kbd className="bg-emerald-950 px-2 py-0.5 rounded">F1</kbd> Bantuan</span>
-          <span className="flex items-center gap-1.5"><kbd className="bg-emerald-950 px-2 py-0.5 rounded">F3</kbd> Parkir Keranjang ({heldCarts.length})</span>
-          <span className="flex items-center gap-1.5"><kbd className="bg-emerald-950 px-2 py-0.5 rounded">F4</kbd> Kamera Barcode</span>
-          <span className="flex items-center gap-1.5"><kbd className="bg-emerald-950 px-2 py-0.5 rounded">F8</kbd> Bayar Belanja</span>
-        </div>
-        <div className="text-emerald-200">
-          Scanner Fisik Otomatis Aktif
-        </div>
-      </div>
-
-      {/* Konten Utama POS Kasir (Multi-Device Responsive) */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 h-full min-h-0">
-        {/* Panel Kiri (65% di Layar Lebar): Katalog Produk */}
-        <div className="lg:col-span-7 xl:col-span-8 flex flex-col h-full min-h-[500px]">
+      {/* Konten Utama POS Kasir (Full-Bleed Command Center) */}
+      <div className="flex-1 min-h-0 flex gap-3 overflow-hidden">
+        {/* Panel Kiri (Katalog Produk & Kategori): 60-65% di Layar Lebar, 100% di HP */}
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
           <ProductGrid
             products={products}
             categories={categories}
@@ -409,8 +398,8 @@ export const PosIndex: React.FC<PosIndexProps> = ({
           />
         </div>
 
-        {/* Panel Kanan (35% di Layar Lebar, Hidden di Mobile): Keranjang Belanja */}
-        <div className="hidden lg:flex lg:col-span-5 xl:col-span-4 flex-col h-full sticky top-20">
+        {/* Panel Kanan (Struk Kasir Full-Height Terpasang Permanen di Layar Desktop/Tablet) */}
+        <div className="hidden lg:flex w-80 xl:w-96 shrink-0 flex-col h-full min-h-0 overflow-hidden">
           <CartTable
             items={cartItems}
             onUpdateQuantity={handleUpdateQuantity}
@@ -472,7 +461,9 @@ export const PosIndex: React.FC<PosIndexProps> = ({
         onClose={() => setIsCameraOpen(false)}
         onScanSuccess={(code) => {
           const found = products.find(
-            (p) => p.barcode === code || p.sku.toLowerCase() === code.toLowerCase()
+            (p) =>
+              (p.barcode && p.barcode === code) ||
+              (p.sku ? p.sku.toLowerCase() === code.toLowerCase() : false)
           );
           if (found) {
             handleAddToCart(found);
@@ -490,12 +481,13 @@ export const PosIndex: React.FC<PosIndexProps> = ({
         title="Setor Kas Laci ke Brankas (Cash Drop)"
         maxWidth="md"
         footer={
-          <div className="flex justify-end gap-3 w-full">
+          <div className="flex gap-3 w-full">
             <Button
               variant="secondary"
               size="lg"
               soundFeedback="click"
               onClick={() => setIsCashDropOpen(false)}
+              className="flex-1 min-h-[54px] rounded-xl font-black text-slate-700"
             >
               Batal
             </Button>
@@ -505,24 +497,25 @@ export const PosIndex: React.FC<PosIndexProps> = ({
               soundFeedback="chime"
               onClick={handleCashDropSubmit}
               disabled={cashDropAmount <= 0}
-              className="font-black"
+              className="flex-1 min-h-[54px] rounded-xl font-black text-white shadow-lg bg-emerald-600 hover:bg-emerald-700"
             >
-              Simpan Setoran ({formatRupiah(cashDropAmount)})
+              Simpan Setoran
             </Button>
           </div>
         }
       >
         <form onSubmit={handleCashDropSubmit} className="space-y-4">
-          <p className="text-sm font-bold text-gray-700">
-            Setor uang fisik berlebih dari laci ke brankas pemilik toko agar laci tidak menumpuk rawan perampokan.
-          </p>
+          <div className="p-3 bg-blue-50 border-2 border-blue-200 rounded-2xl text-blue-950 text-xs sm:text-sm font-bold leading-relaxed flex items-start gap-2">
+            <span className="text-xl">🛡️</span>
+            <span>Amankan uang fisik laci kasir secara berkala ke brankas pemilik toko agar laci tidak menumpuk uang tunai.</span>
+          </div>
 
           <div>
-            <label htmlFor="cash-drop-amount-input" className="block text-base font-black text-gray-900 mb-1">
+            <label htmlFor="cash-drop-amount-input" className="block text-sm font-black uppercase text-slate-800 tracking-wider mb-1.5">
               Nominal Uang Disetor ke Brankas:
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-xl font-black text-gray-500">
+              <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-2xl font-black text-slate-400 select-none">
                 Rp
               </span>
               <input
@@ -533,22 +526,39 @@ export const PosIndex: React.FC<PosIndexProps> = ({
                 value={cashDropAmount || ''}
                 onChange={(e) => setCashDropAmount(Math.max(0, parseInt(e.target.value, 10) || 0))}
                 placeholder="0"
-                className="w-full min-h-[58px] pl-14 pr-4 text-2xl font-black border-2 border-gray-300 rounded-2xl focus:border-emerald-600"
+                className="w-full min-h-[64px] pl-14 pr-4 text-3xl font-black text-slate-950 border-3 border-slate-300 rounded-2xl focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 tabular-nums"
               />
+            </div>
+
+            {/* Preset Cepat Setor */}
+            <div className="flex gap-2 mt-2">
+              {[100000, 200000, 500000, 1000000].map((amt) => (
+                <button
+                  key={amt}
+                  type="button"
+                  onClick={() => {
+                    sound.playClick();
+                    setCashDropAmount(amt);
+                  }}
+                  className="flex-1 py-1.5 px-1 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-black text-slate-800 border border-slate-300 tabular-nums cursor-pointer"
+                >
+                  {formatRupiah(amt)}
+                </button>
+              ))}
             </div>
           </div>
 
           <div>
-            <label htmlFor="cash-drop-notes-input" className="block text-sm font-bold text-gray-700 mb-1">
-              Catatan / Diterima Oleh:
+            <label htmlFor="cash-drop-notes-input" className="block text-xs font-black uppercase text-slate-700 tracking-wider mb-1">
+              Keterangan / Diterima Oleh (Opsional):
             </label>
             <input
               id="cash-drop-notes-input"
               type="text"
               value={cashDropNotes}
               onChange={(e) => setCashDropNotes(e.target.value)}
-              placeholder="Contoh: Diserahkan langsung ke Ibu Pemilik..."
-              className="w-full min-h-[48px] px-3 text-base font-bold border-2 border-gray-300 rounded-xl"
+              placeholder="Contoh: Diserahkan langsung ke Pemilik Toko"
+              className="w-full min-h-[50px] px-3.5 text-base font-bold border-2 border-slate-300 rounded-xl focus:border-emerald-600"
             />
           </div>
         </form>

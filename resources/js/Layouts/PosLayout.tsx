@@ -92,119 +92,105 @@ export const PosLayout: React.FC<PosLayoutProps> = ({
       <Head title={title} />
       <OfflineBanner />
 
-      <div className="min-h-screen bg-gray-100 flex flex-col antialiased select-none">
-        {/* Header Kasir Utama */}
-        <header className="sticky top-0 z-40 bg-white border-b-3 border-gray-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
-            {/* Logo & Judul Toko */}
-            <div className="flex items-center gap-3">
-              <Link href="/pos" className="flex items-center gap-2">
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow">
-                  G
-                </div>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight leading-none">
-                    GROSSMART
-                  </h1>
-                  <span className="text-xs font-bold text-emerald-700 tracking-wide block">
-                    Toko Kelontong Mandiri
-                  </span>
-                </div>
-              </Link>
-
-              {/* Status Shift Kasir Aktif */}
-              <div className="hidden md:flex items-center gap-2 pl-4 border-l-2 border-gray-200 text-sm">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-extrabold text-gray-900">{cashierName}</span>
-                {shiftStartTime && (
-                  <span className="text-gray-500 font-medium">
-                    (Shift aktif sejak {shiftStartTime})
-                  </span>
-                )}
+      {/* Container Full-Viewport: Di desktop 100vh tanpa scroll window; di mobile flex responsif */}
+      <div className="h-screen w-screen overflow-hidden bg-slate-950 flex flex-col antialiased select-none text-slate-100">
+        {/* Header Navigasi Kasir Ramping (56px) */}
+        <header className="h-14 shrink-0 bg-slate-900 border-b border-slate-800 px-3 sm:px-5 flex items-center justify-between z-30">
+          {/* Logo & Info Kasir */}
+          <div className="flex items-center gap-3">
+            <Link href="/pos" className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-md border border-emerald-500">
+                G
               </div>
-            </div>
+              <div className="leading-tight">
+                <span className="text-base sm:text-lg font-black tracking-tight text-white block">
+                  GROSSMART
+                </span>
+                <span className="text-[10px] font-bold text-emerald-400 hidden sm:block">
+                  POS Kelontong Mandiri
+                </span>
+              </div>
+            </Link>
 
-            {/* Aksi Cepat Header */}
-            <div className="flex items-center gap-2">
-              {/* Tombol Pasang PWA */}
-              {canInstallPWA && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    sound.playClick();
-                    promptPWAInstall();
-                  }}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 font-bold text-sm cursor-pointer"
-                >
-                  <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  <span>Pasang Aplikasi</span>
-                </button>
-              )}
-
-              {/* Tombol Setor Uang ke Brankas (Cash Drop) */}
-              {onOpenCashDrop && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    sound.playClick();
-                    onOpenCashDrop();
-                  }}
-                  className="px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border-2 border-blue-300 font-bold text-sm cursor-pointer"
-                  title="Setor uang laci kasir ke brankas pemilik di tengah shift"
-                >
-                  Setor Brankas
-                </button>
-              )}
-
-              {/* Toggle Suara Audio Bip */}
-              <button
-                type="button"
-                onClick={toggleAudio}
-                className={`p-2.5 rounded-2xl border-2 transition-colors cursor-pointer ${
-                  isAudioMuted
-                    ? 'bg-rose-50 text-rose-700 border-rose-300'
-                    : 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                }`}
-                title={isAudioMuted ? 'Suara dimatikan (Klik untuk aktifkan)' : 'Suara aktif (Klik untuk bisukan)'}
-                aria-label="Toggle Suara"
-              >
-                {isAudioMuted ? (
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-                  </svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                  </svg>
-                )}
-              </button>
-
-              {/* Tombol Tutup Shift Kasir */}
-              {onCloseShift && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    sound.playClick();
-                    onCloseShift();
-                  }}
-                  className="px-3.5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-black text-sm shadow cursor-pointer border-b-2 border-rose-800"
-                >
-                  Tutup Shift
-                </button>
+            {/* Status Kasir Aktif */}
+            <div className="hidden md:flex items-center gap-2 pl-3 ml-2 border-l border-slate-800 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-extrabold text-slate-200">{cashierName}</span>
+              {shiftStartTime && (
+                <span className="text-slate-400">
+                  &bull; Shift: {shiftStartTime}
+                </span>
               )}
             </div>
           </div>
+
+          {/* Quick Action Buttons (Min-Touch 48px) */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {canInstallPWA && (
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  promptPWAInstall();
+                }}
+                className="hidden lg:flex items-center gap-1.5 min-h-[44px] px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 font-bold text-xs cursor-pointer transition-all active:scale-95"
+              >
+                <span>📲</span>
+                <span>Pasang Aplikasi</span>
+              </button>
+            )}
+
+            {onOpenCashDrop && (
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  onOpenCashDrop();
+                }}
+                className="min-h-[44px] px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 font-black text-xs cursor-pointer transition-all active:scale-95 flex items-center gap-1.5"
+                title="Setor kas laci ke brankas pemilik"
+              >
+                <span>🛡️</span>
+                <span className="hidden sm:inline">Setor Brankas</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={toggleAudio}
+              className={`min-h-[44px] min-w-[44px] p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-center active:scale-95 ${
+                isAudioMuted
+                  ? 'bg-rose-950/60 text-rose-400 border-rose-800'
+                  : 'bg-slate-800 text-emerald-400 border-slate-700'
+              }`}
+              title={isAudioMuted ? 'Suara dimatikan' : 'Suara aktif'}
+              aria-label="Toggle Suara"
+            >
+              {isAudioMuted ? '🔇' : '🔊'}
+            </button>
+
+            {onCloseShift && (
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  onCloseShift();
+                }}
+                className="min-h-[44px] px-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs cursor-pointer transition-all active:scale-95 flex items-center gap-1.5 shadow-md border border-rose-500"
+              >
+                <span>🔒</span>
+                <span>Tutup Shift</span>
+              </button>
+            )}
+          </div>
         </header>
 
-        {/* Konten Halaman */}
-        <main className="flex-1 max-w-7xl w-full mx-auto p-2 sm:p-4 pb-24 sm:pb-6 flex flex-col">
+        {/* Konten Utama Aplikasi: 100% Mengisi Sisa Viewport */}
+        <main className="flex-1 min-h-0 w-full overflow-hidden flex flex-col p-2 sm:p-3 lg:p-4 pb-20 sm:pb-3">
           {children}
         </main>
 
-        {/* Navigasi Bawah Khusus Layar HP */}
+        {/* Mobile Bottom Navigation (Hanya di Layar Kecil) */}
         <BottomNavBar items={navItems} />
       </div>
     </ToastProvider>

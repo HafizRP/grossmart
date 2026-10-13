@@ -10,7 +10,6 @@ export interface ShiftCloseProps {
   shiftId: number;
   cashierName: string;
   startTime: string;
-  // Jika sudah disubmit (hasil penutupan shift)
   isClosed?: boolean;
   expectedCashEnding?: number;
   actualCashEnding?: number;
@@ -67,188 +66,183 @@ export const ShiftClose: React.FC<ShiftCloseProps> = ({
     <ToastProvider>
       <Head title="Tutup Shift Kasir (Tutup Kasir Buta) - Grossmart" />
 
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="max-w-xl w-full bg-white rounded-3xl border-4 border-gray-200 shadow-2xl p-6 sm:p-8 space-y-6">
-          {/* Header Tutup Kasir */}
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-xl w-full bg-white rounded-3xl border-4 border-slate-700 shadow-2xl p-6 sm:p-8 space-y-6">
+          {/* Header Tutup Kasir Ergonomis */}
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 bg-rose-100 text-rose-700 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
-              <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
+            <div className="w-16 h-16 bg-rose-100 text-rose-700 rounded-2xl flex items-center justify-center mx-auto shadow-inner text-3xl">
+              🔒
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
               {isClosed ? 'Shift Kasir Berhasil Ditutup' : 'Tutup Kasir (Tutup Buta / Blind Count)'}
             </h2>
-            <p className="text-base font-bold text-gray-600">
-              Kasir: <strong>{cashierName}</strong> &bull; Mulai: {startTime}
+            <p className="text-sm sm:text-base font-bold text-slate-600">
+              Kasir: <strong className="text-slate-900">{cashierName}</strong> &bull; Mulai: {startTime}
             </p>
           </div>
 
           {!isClosed ? (
-            /* Formulir Tutup Kasir Buta (Angka Sistem Dirahasiakan) */
             <form onSubmit={handleCloseShift} className="space-y-5">
-              <div className="p-4 bg-amber-50 rounded-2xl border-2 border-amber-300 text-amber-950 text-sm font-bold">
-                <span className="block font-black text-base text-amber-900 mb-1">
-                  Pemberitahuan Keamanan Finansial:
-                </span>
-                Sistem sengaja merahasiakan saldo sistem agar Anda menghitung fisik uang secara murni tanpa rekayasa.
-                Keluarkan seluruh uang tunai dari laci kasir dan hitung secara teliti.
+              {/* Box Edukasi Tutup Kasir Buta */}
+              <div className="p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-950 text-xs sm:text-sm font-bold leading-relaxed space-y-1">
+                <div className="flex items-center gap-2 font-black text-amber-900 text-sm">
+                  <span>ℹ️</span> Cara Menghitung Kas Tutup Kasir:
+                </div>
+                <p>
+                  Hitung seluruh uang fisik (kertas & koin) yang ada di dalam laci kasir saat ini. Angka saldo sistem sengaja disembunyikan agar penghitungan murni objektif dan bebas manipulasi.
+                </p>
               </div>
 
+              {/* Input Uang Fisik Terhitung */}
               <div>
-                <label htmlFor="actual-cash-input" className="block text-base font-black text-gray-900 mb-2">
-                  Total Uang Fisik Hasil Hitungan di Laci:
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label htmlFor="actual-cash-input" className="block text-sm font-black text-slate-900 uppercase tracking-wider">
+                    Total Uang Fisik di Laci:
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playClick();
+                      setIsCalculatorOpen(true);
+                    }}
+                    className="text-xs font-black text-emerald-700 hover:text-emerald-900 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <span>🧮</span> Hitung Per Lembar Uang
+                  </button>
+                </div>
+
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-2xl font-black text-gray-500">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-2xl font-black text-slate-400 select-none">
                     Rp
                   </span>
                   <input
                     id="actual-cash-input"
                     type="number"
                     min="0"
+                    step="100"
                     value={actualCash || ''}
                     onChange={(e) => setActualCash(Math.max(0, parseInt(e.target.value, 10) || 0))}
                     placeholder="0"
-                    className="w-full min-h-[64px] pl-16 pr-4 text-3xl font-black text-emerald-800 border-3 border-gray-300 rounded-2xl focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
-                    autoFocus
+                    className="w-full min-h-[64px] pl-14 pr-4 text-3xl font-black text-slate-950 border-3 border-slate-300 rounded-2xl focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 tabular-nums"
                   />
                 </div>
-                <p className="text-sm font-bold text-gray-500 mt-1">
-                  Terbilang: {formatRupiah(actualCash)}
-                </p>
+
+                {Object.keys(denominationCounts).length > 0 && (
+                  <p className="text-xs font-extrabold text-emerald-700 mt-2 flex items-center gap-1">
+                    ✓ Rincian per lembar/koin tersimpan dari kalkulator fisik
+                  </p>
+                )}
               </div>
 
-              <Button
-                type="button"
-                variant="secondary"
-                size="lg"
-                fullWidth
-                soundFeedback="click"
-                onClick={() => setIsCalculatorOpen(true)}
-                className="text-base sm:text-lg font-black border-2 border-emerald-400 bg-emerald-50 text-emerald-900 hover:bg-emerald-100"
-              >
-                Gunakan Kalkulator Pecahan Lembar & Koin
-              </Button>
-
+              {/* Catatan Tambahan Kasir */}
               <div>
-                <label htmlFor="close-notes-input" className="block text-sm font-black text-gray-700 mb-1">
-                  Catatan Penutupan Kasir (Opsional):
+                <label htmlFor="notes-input" className="block text-xs font-black uppercase text-slate-700 tracking-wider mb-1.5">
+                  Catatan / Keterangan Kasir (Opsional):
                 </label>
                 <textarea
-                  id="close-notes-input"
+                  id="notes-input"
                   rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Contoh: Ada uang kembalian 2.000 sobek sedikit..."
-                  className="w-full p-3 text-base font-bold border-2 border-gray-300 rounded-xl focus:border-emerald-600"
+                  placeholder="Contoh: Ada uang kembalian sobek Rp 5.000 disimpan terpisah, dll."
+                  className="w-full p-3 text-sm font-bold border-2 border-slate-300 rounded-xl focus:border-emerald-600"
                 />
               </div>
 
-              <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="xl"
-                  soundFeedback="click"
-                  onClick={() => router.visit('/pos')}
-                  className="w-1/3"
-                >
-                  Kembali
-                </Button>
-
+              {/* Tombol Aksi Tutup Shift */}
+              <div className="pt-2 flex flex-col gap-3">
                 <Button
                   type="submit"
                   variant="danger"
                   size="xl"
+                  fullWidth
                   isLoading={isSubmitting}
                   soundFeedback="chime"
-                  className="w-2/3 text-xl font-black shadow-xl"
+                  className="min-h-[64px] text-xl font-black uppercase tracking-wider rounded-2xl shadow-xl bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600"
                 >
-                  SIMPAN & TUTUP SHIFT
+                  KUNCI & TUTUP SHIFT SEKARANG 🔒
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
+                  soundFeedback="click"
+                  onClick={() => router.visit('/pos')}
+                  className="min-h-[50px] text-sm font-black text-slate-700 rounded-xl"
+                >
+                  ← Batal & Kembali ke Layar Kasir
                 </Button>
               </div>
             </form>
           ) : (
-            /* Hasil Perhitungan Setelah Disimpan (Membuka Selisih Kas) */
-            <div className="space-y-5">
-              <div className="p-5 bg-gray-50 rounded-2xl border-3 border-gray-200 space-y-3">
-                <div className="flex justify-between items-center text-base font-bold text-gray-700">
-                  <span>Total Transaksi Dilayani:</span>
-                  <span className="text-gray-950 font-black text-lg">{totalSalesCount} Nota</span>
+            /* Tampilan Pasca Tutup Shift (Laporan Selesai) */
+            <div className="space-y-5 text-center">
+              <div className="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-3">
+                <div className="flex justify-between items-center text-sm font-bold text-slate-600">
+                  <span>Total Transaksi Selesai:</span>
+                  <span className="text-slate-900 font-extrabold text-base">{totalSalesCount} Struk</span>
                 </div>
-
-                <div className="flex justify-between items-center text-base font-bold text-gray-700">
-                  <span>Saldo Kas Seharusnya (Sistem):</span>
-                  <span className="text-gray-950 font-black text-lg">{formatRupiah(expectedCashEnding || 0)}</span>
-                </div>
-
-                <div className="flex justify-between items-center text-base font-bold text-gray-700">
-                  <span>Uang Fisik Dihitung Kasir:</span>
-                  <span className="text-gray-950 font-black text-lg">{formatRupiah(actualCashEnding || 0)}</span>
-                </div>
-
-                {/* Selisih Kasir */}
-                <div className="pt-3 border-t-2 border-gray-200 flex justify-between items-center">
-                  <span className="text-lg font-black text-gray-900">
-                    SELISIH KAS (DIFFERENCE):
+                <div className="flex justify-between items-center text-sm font-bold text-slate-600">
+                  <span>Uang Fisik Terhitung:</span>
+                  <span className="text-slate-900 font-extrabold text-lg tabular-nums">
+                    {formatRupiah(actualCashEnding || 0)}
                   </span>
+                </div>
+                <div className="flex justify-between items-center text-sm font-bold text-slate-600">
+                  <span>Ekspektasi Saldo Sistem:</span>
+                  <span className="text-slate-900 font-extrabold text-lg tabular-nums">
+                    {formatRupiah(expectedCashEnding || 0)}
+                  </span>
+                </div>
+
+                <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
+                  <span className="text-sm font-black uppercase text-slate-800">Selisih Kas Laci:</span>
                   <span
-                    className={`text-2xl font-black px-3 py-1 rounded-xl ${
+                    className={`text-xl font-black tabular-nums ${
                       (cashDifference || 0) === 0
-                        ? 'bg-emerald-100 text-emerald-800'
+                        ? 'text-emerald-700'
                         : (cashDifference || 0) > 0
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-rose-100 text-rose-800'
+                        ? 'text-blue-700'
+                        : 'text-rose-700'
                     }`}
                   >
                     {(cashDifference || 0) === 0
-                      ? 'PAS (NOL SELISIH)'
+                      ? 'PAS (Rp 0)'
                       : (cashDifference || 0) > 0
-                      ? `LEBIH +${formatRupiah(cashDifference || 0)}`
-                      : `KURANG ${formatRupiah(cashDifference || 0)}`
-                    }
+                      ? `Lebih ${formatRupiah(cashDifference || 0)}`
+                      : `Kurang ${formatRupiah(Math.abs(cashDifference || 0))}`}
                   </span>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  type="button"
-                  variant="info"
-                  size="lg"
-                  fullWidth
-                  soundFeedback="click"
-                  onClick={() => window.print()}
-                >
-                  Cetak Berita Acara Kasir
-                </Button>
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  soundFeedback="click"
-                  onClick={() => router.visit('/login')}
-                >
-                  Selesai & Keluar Akun
-                </Button>
-              </div>
+              <Button
+                variant="primary"
+                size="xl"
+                fullWidth
+                soundFeedback="click"
+                onClick={() => router.visit('/login')}
+                className="min-h-[56px] text-lg font-black rounded-2xl"
+              >
+                Selesai & Keluar Sesi
+              </Button>
             </div>
           )}
         </div>
-      </div>
 
-      <DenominationCalculatorModal
-        isOpen={isCalculatorOpen}
-        onClose={() => setIsCalculatorOpen(false)}
-        title="Hitung Uang Fisik Penutupan Kasir"
-        initialCounts={denominationCounts}
-        onApply={(total, counts) => {
-          setActualCash(total);
-          setDenominationCounts(counts);
-        }}
-      />
+        {/* Modal Hitung Uang Fisik Lembar / Koin */}
+        <DenominationCalculatorModal
+          isOpen={isCalculatorOpen}
+          onClose={() => setIsCalculatorOpen(false)}
+          initialCounts={denominationCounts}
+          onApply={(total, counts) => {
+            setActualCash(total);
+            setDenominationCounts(counts);
+          }}
+        />
+      </div>
     </ToastProvider>
   );
 };

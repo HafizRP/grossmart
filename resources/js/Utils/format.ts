@@ -20,6 +20,52 @@ export function formatRupiahShort(amount: number): string {
   return String(safe);
 }
 
+export interface CashDenominationBreakdown {
+  value: number;
+  label: string;
+  count: number;
+  colorBg: string;
+  colorText: string;
+  colorBorder: string;
+  isCoin?: boolean;
+}
+
+/**
+ * Hitung rincian lembaran/koin fisik kembalian untuk panduan kasir lansia
+ */
+export function calculateChangeBreakdown(changeAmount: number): CashDenominationBreakdown[] {
+  let remaining = Math.max(0, Math.round(Number(changeAmount) || 0));
+  if (remaining <= 0) return [];
+
+  const denominations = [
+    { value: 100000, label: '100.000', colorBg: 'bg-rose-50', colorText: 'text-rose-900', colorBorder: 'border-rose-300' },
+    { value: 50000, label: '50.000', colorBg: 'bg-blue-50', colorText: 'text-blue-900', colorBorder: 'border-blue-300' },
+    { value: 20000, label: '20.000', colorBg: 'bg-emerald-50', colorText: 'text-emerald-900', colorBorder: 'border-emerald-300' },
+    { value: 10000, label: '10.000', colorBg: 'bg-purple-50', colorText: 'text-purple-900', colorBorder: 'border-purple-300' },
+    { value: 5000, label: '5.000', colorBg: 'bg-amber-50', colorText: 'text-amber-900', colorBorder: 'border-amber-300' },
+    { value: 2000, label: '2.000', colorBg: 'bg-slate-100', colorText: 'text-slate-900', colorBorder: 'border-slate-300' },
+    { value: 1000, label: '1.000', colorBg: 'bg-lime-50', colorText: 'text-lime-900', colorBorder: 'border-lime-300' },
+    { value: 500, label: '500 (Koin)', colorBg: 'bg-zinc-100', colorText: 'text-zinc-800', colorBorder: 'border-zinc-300', isCoin: true },
+    { value: 200, label: '200 (Koin)', colorBg: 'bg-zinc-100', colorText: 'text-zinc-800', colorBorder: 'border-zinc-300', isCoin: true },
+    { value: 100, label: '100 (Koin)', colorBg: 'bg-zinc-100', colorText: 'text-zinc-800', colorBorder: 'border-zinc-300', isCoin: true },
+  ];
+
+  const breakdown: CashDenominationBreakdown[] = [];
+
+  for (const denom of denominations) {
+    if (remaining >= denom.value) {
+      const count = Math.floor(remaining / denom.value);
+      remaining %= denom.value;
+      breakdown.push({
+        ...denom,
+        count,
+      });
+    }
+  }
+
+  return breakdown;
+}
+
 export function formatTanggalWaktu(isoString: string): string {
   if (!isoString) return '-';
   try {

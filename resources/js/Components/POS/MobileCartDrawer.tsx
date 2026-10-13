@@ -3,7 +3,6 @@ import { CartItem } from '@/types/pos';
 import { formatRupiah } from '@/Utils/format';
 import { sound } from '@/Utils/sound';
 import { CartTable } from '@/Components/POS/CartTable';
-import { Button } from '@/Components/UI/Button';
 
 export interface MobileCartDrawerProps {
   items: CartItem[];
@@ -31,69 +30,61 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
 
   return (
     <>
-      {/* Bilah Keranjang Melayang Sticky Bawah Layar HP (Hanya Tampil di HP/sm:hidden) */}
-      <div className="fixed bottom-20 left-3 right-3 z-30 sm:hidden">
+      {/* Bilah Bar Keranjang Mengambang Ergonomis (Hanya Muncul di Mobile/Tablet: lg:hidden) */}
+      {/* Terpasang di atas Bottom Nav Bar (bottom-20) dengan z-index 35 */}
+      <div className="fixed bottom-20 left-3 right-3 z-35 lg:hidden">
         <button
           type="button"
           onClick={() => {
             sound.playClick();
             setIsOpen(true);
           }}
-          className="
-            w-full min-h-[64px] bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900
-            text-white rounded-2xl shadow-2xl p-4 flex items-center justify-between
-            border-3 border-emerald-500 touch-manipulation cursor-pointer select-none
-          "
+          className="w-full min-h-[64px] bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 active:scale-[0.99] text-white rounded-2xl shadow-2xl px-4 py-3 flex items-center justify-between border-2 border-emerald-400 touch-manipulation cursor-pointer select-none"
         >
           <div className="flex items-center gap-3">
             <div className="relative">
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <span className="absolute -top-2 -right-2 bg-amber-400 text-gray-950 font-black text-xs px-2 py-0.5 rounded-full shadow">
+              <span className="text-2xl">🛒</span>
+              <span className="absolute -top-2 -right-2 bg-amber-400 text-slate-950 font-black text-xs px-2 py-0.5 rounded-full shadow">
                 {totalItemsCount}
               </span>
             </div>
             <div className="text-left">
-              <span className="text-xs uppercase font-extrabold tracking-wider text-emerald-200 block">
+              <span className="text-[10px] uppercase font-black tracking-wider text-emerald-200 block">
                 Keranjang Belanja
               </span>
-              <span className="text-xl font-black block leading-none">
+              <span className="text-xl font-black block leading-none tabular-nums">
                 {formatRupiah(grandTotal)}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 bg-white text-emerald-800 font-black text-base px-3.5 py-2 rounded-xl shadow">
-            <span>Buka Laci</span>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-            </svg>
+          <div className="flex items-center gap-1.5 bg-slate-900/80 text-emerald-400 font-black text-sm px-3.5 py-2 rounded-xl border border-slate-700 shadow">
+            <span>Buka Struk</span>
+            <span>▲</span>
           </div>
         </button>
       </div>
 
-      {/* Laci Penuh (Bottom Sheet Drawer) */}
+      {/* Full Bottom-Sheet Drawer Layar Penuh di Mobile */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 sm:hidden flex flex-col justify-end">
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
           {/* Backdrop Gelap */}
           <div
-            className="fixed inset-0 bg-black/60 transition-opacity"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
             onClick={() => {
               sound.playClick();
               setIsOpen(false);
             }}
           />
 
-          {/* Konten Laci Menempel Bawah */}
-          <div className="relative bg-white rounded-t-3xl shadow-2xl max-h-[88vh] flex flex-col z-10 border-t-4 border-emerald-600">
-            {/* Header Laci */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b-2 border-gray-100 bg-gray-50 rounded-t-3xl">
+          {/* Lembar Konten Struk */}
+          <div className="relative bg-slate-950 rounded-t-3xl border-t-3 border-slate-800 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200">
+            {/* Handle Bar Penutup */}
+            <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-emerald-600" />
-                <h3 className="text-xl font-black text-gray-900">
-                  Keranjang ({totalItemsCount} Barang)
-                </h3>
+                <span className="text-xl">🧾</span>
+                <span className="text-base font-black text-white">Struk Kasir Sementara</span>
+                <span className="text-xs font-bold text-slate-400">({totalItemsCount} barang)</span>
               </div>
 
               <button
@@ -102,16 +93,13 @@ export const MobileCartDrawer: React.FC<MobileCartDrawerProps> = ({
                   sound.playClick();
                   setIsOpen(false);
                 }}
-                className="p-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer"
-                aria-label="Tutup Keranjang"
+                className="min-h-[44px] min-w-[44px] rounded-xl bg-slate-800 text-slate-300 font-black text-lg flex items-center justify-center hover:bg-slate-700 cursor-pointer"
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                ✕
               </button>
             </div>
 
-            {/* Isi Tabel Keranjang */}
+            {/* Container Struk CartTable */}
             <div className="flex-1 overflow-y-auto p-2">
               <CartTable
                 items={items}

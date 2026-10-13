@@ -18,11 +18,11 @@ export const OwnerLayout: React.FC<OwnerLayoutProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const navLinks = [
-    { label: 'Ringkasan Toko', href: '/owner/dashboard' },
-    { label: 'Halaman Kasir (POS)', href: '/pos' },
-    { label: 'Katalog Produk & Stok', href: '/owner/products' },
-    { label: 'Laporan & Keuangan', href: '/owner/reports' },
-    { label: 'Tempat Sampah', href: '/owner/trash' },
+    { label: 'Ringkasan Warung', href: '/owner/dashboard', icon: '📊' },
+    { label: 'Layar Kasir (POS)', href: '/pos', icon: '🛒' },
+    { label: 'Katalog Barang & Stok', href: '/owner/products', icon: '📦' },
+    { label: 'Laporan Laba & Bon', href: '/owner/reports', icon: '📈' },
+    { label: 'Pengaturan Toko', href: '/settings', icon: '⚙️' },
   ];
 
   const handleLogout = () => {
@@ -35,93 +35,135 @@ export const OwnerLayout: React.FC<OwnerLayoutProps> = ({
       <Head title={title} />
       <OfflineBanner />
 
-      <div className="min-h-screen bg-gray-100 flex flex-col antialiased">
-        {/* Navbar Pemilik */}
-        <header className="bg-white border-b-2 border-gray-200 sticky top-0 z-30 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-18 min-h-[72px]">
-            {/* Logo */}
-            <div className="flex items-center gap-3">
-              <Link href="/owner/dashboard" className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-700 text-white font-black text-xl flex items-center justify-center shadow">
-                  G
-                </div>
-                <div>
-                  <span className="text-xl font-black text-gray-950 block leading-tight">GROSSMART</span>
-                  <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block">Panel Pemilik</span>
-                </div>
-              </Link>
-
-              {/* Navigasi Desktop */}
-              <nav className="hidden md:flex items-center gap-1 ml-6">
-                {navLinks.map((lnk) => (
-                  <Link
-                    key={lnk.href}
-                    href={lnk.href}
-                    className="px-3.5 py-2 rounded-xl text-base font-extrabold text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
-                  >
-                    {lnk.label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-
-            {/* Profil & Tombol Keluar */}
-            <div className="hidden sm:flex items-center gap-3">
-              <div className="text-right">
-                <span className="block text-sm font-black text-gray-900">{userName}</span>
-                <span className="block text-xs font-bold text-emerald-600">Akun Pemilik Toko</span>
+      {/* Layout Shell: Desktop Sidebar Kiri Tetap + Mobile Header & Bottom Bar */}
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row antialiased selection:bg-emerald-500 selection:text-white">
+        {/* ============================================================== */}
+        {/* SIDEBAR DESKTOP PERMANEN (Hanya Tampil di Tablet/Desktop: md:flex) */}
+        {/* ============================================================== */}
+        <aside className="hidden md:flex w-64 lg:w-72 shrink-0 bg-slate-900 border-r border-slate-800 flex-col justify-between p-5 sticky top-0 h-screen select-none">
+          <div className="space-y-6">
+            {/* Brand Logo & Title */}
+            <Link href="/owner/dashboard" className="flex items-center gap-3 group">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center font-black text-2xl text-white shadow-lg border-2 border-emerald-500 group-hover:scale-105 transition-all">
+                G
               </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="px-3.5 py-2 rounded-xl bg-gray-100 hover:bg-rose-50 hover:text-rose-700 text-gray-700 font-bold text-sm border border-gray-300 transition-colors cursor-pointer"
-              >
-                Keluar
-              </button>
-            </div>
+              <div>
+                <span className="text-xl font-black text-white tracking-tight block leading-none">
+                  GROSSMART
+                </span>
+                <span className="text-xs font-bold text-emerald-400 block mt-1">
+                  Panel Pemilik Warung
+                </span>
+              </div>
+            </Link>
 
-            {/* Hamburger Mobile */}
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="md:hidden p-2.5 rounded-xl bg-gray-100 text-gray-800"
-              aria-label="Menu"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+            {/* Menu Navigasi Samping */}
+            <nav className="space-y-1.5 pt-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 px-3 block mb-2">
+                Menu Utama Warung:
+              </span>
+              {navLinks.map((link) => {
+                const isActive = typeof window !== 'undefined' && window.location.pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`min-h-[52px] px-3.5 py-3 rounded-2xl text-sm font-black transition-all flex items-center gap-3 cursor-pointer ${
+                      isActive
+                        ? 'bg-emerald-600 text-white shadow-lg border border-emerald-500 ring-2 ring-emerald-500/20'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80 border border-transparent'
+                    }`}
+                  >
+                    <span className="text-xl">{link.icon}</span>
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          {/* Menu Dropdown Mobile */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden p-4 bg-white border-t border-gray-200 space-y-2">
-              {navLinks.map((lnk) => (
-                <Link
-                  key={lnk.href}
-                  href={lnk.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-4 py-3 rounded-xl text-base font-black text-gray-800 hover:bg-emerald-50 hover:text-emerald-800"
-                >
-                  {lnk.label}
-                </Link>
-              ))}
-              <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-                <span className="font-bold text-sm text-gray-700">{userName}</span>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="text-rose-600 font-black text-sm"
-                >
-                  Keluar Akun
-                </button>
-              </div>
+          {/* User Profile & Tombol Keluar di Bawah Sidebar */}
+          <div className="pt-4 border-t border-slate-800 space-y-3">
+            <div className="px-2">
+              <span className="text-sm font-black text-white block truncate">
+                {userName}
+              </span>
+              <span className="text-xs font-bold text-emerald-400">
+                Pemilik Terverifikasi
+              </span>
             </div>
-          )}
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full min-h-[48px] px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-400 border border-slate-700 hover:border-rose-800 font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            >
+              <span>🚪</span>
+              <span>Keluar Akun</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* ============================================================== */}
+        {/* HEADER TOP NAV KHUSUS MOBILE (Hanya Tampil di Layar HP: md:hidden) */}
+        {/* ============================================================== */}
+        <header className="md:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+          <Link href="/owner/dashboard" className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center font-black text-xl text-white shadow">
+              G
+            </div>
+            <div>
+              <span className="text-base font-black text-white block leading-none">
+                GROSSMART
+              </span>
+              <span className="text-[10px] font-bold text-emerald-400">
+                Pemilik Warung
+              </span>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="min-h-[44px] min-w-[44px] p-2 rounded-xl bg-slate-800 text-white border border-slate-700 flex items-center justify-center cursor-pointer"
+              aria-label="Menu Navigasi"
+            >
+              <span className="text-xl">{isMobileMenuOpen ? '✕' : '☰'}</span>
+            </button>
+          </div>
         </header>
 
-        {/* Konten Halaman */}
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+        {/* Mobile Dropdown Drawer */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-slate-900 border-b border-slate-800 p-4 space-y-2 shadow-2xl z-20">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="min-h-[50px] px-4 py-3 rounded-xl text-base font-black text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center gap-3"
+              >
+                <span className="text-xl">{link.icon}</span>
+                <span>{link.label}</span>
+              </Link>
+            ))}
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full min-h-[50px] px-4 py-3 rounded-xl bg-rose-950 text-rose-300 border border-rose-800 font-black text-base flex items-center justify-center gap-2 mt-3"
+            >
+              <span>🚪</span>
+              <span>Keluar Sesi</span>
+            </button>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* KONTEN UTAMA HALAMAN PEMILIK (100% Flex-1 dengan Padding Rapi)  */}
+        {/* ============================================================== */}
+        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto">
           {children}
         </main>
       </div>
