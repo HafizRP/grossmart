@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\Owner\BackupController;
+use App\Http\Controllers\Owner\ConsignmentController;
 use App\Http\Controllers\Owner\DashboardController;
+use App\Http\Controllers\Owner\ExpenseController;
 use App\Http\Controllers\Owner\ProductController;
+use App\Http\Controllers\Owner\PurchaseController;
+use App\Http\Controllers\Owner\ReceivableController;
 use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Owner\SettingController;
 use App\Http\Controllers\Owner\StockConversionController;
@@ -20,8 +25,10 @@ Route::get('/', function () {
         if (auth()->user()->isOwner()) {
             return redirect()->route('owner.dashboard');
         }
+
         return redirect()->route('pos.index');
     }
+
     return Inertia::render('Welcome', [
         'canLogin' => true,
         'canRegister' => true,
@@ -74,11 +81,34 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::get('/conversions', [StockConversionController::class, 'index'])->name('conversions.index');
     Route::post('/conversions', [StockConversionController::class, 'store'])->name('conversions.store');
 
-    // Laporan Finansial
+    // Buku Bon Utang Pelanggan (Kasbon Warung)
+    Route::get('/receivables', [ReceivableController::class, 'index'])->name('receivables.index');
+    Route::post('/receivables/{id}/pay', [ReceivableController::class, 'pay'])->name('receivables.pay');
+
+    // Kulakan & Pasokan Supplier
+    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
+    Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+    Route::post('/purchases/suppliers', [PurchaseController::class, 'storeSupplier'])->name('purchases.suppliers.store');
+
+    // Biaya Operasional Toko
+    Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+    Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
+    Route::delete('/expenses/{id}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
+
+    // Makanan Titipan Warga (Konsinyasi)
+    Route::get('/consignments', [ConsignmentController::class, 'index'])->name('consignments.index');
+    Route::post('/consignments/consignors', [ConsignmentController::class, 'storeConsignor'])->name('consignments.consignors.store');
+    Route::post('/consignments/settlements', [ConsignmentController::class, 'storeSettlement'])->name('consignments.settlements.store');
+
+    // Laporan Finansial & Ekspor CSV
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
     Route::get('/reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit-loss');
     Route::get('/reports/cash-flow', [ReportController::class, 'cashFlow'])->name('reports.cash-flow');
+    Route::get('/reports/export-sales', [BackupController::class, 'exportSalesCsv'])->name('reports.export-sales');
+
+    // Cadangan Database SQLite
+    Route::get('/backup/database', [BackupController::class, 'downloadDatabase'])->name('backup.database');
 
     // Pengaturan Toko
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
@@ -91,6 +121,7 @@ Route::middleware('auth')->group(function () {
         if (auth()->user()->isOwner()) {
             return redirect()->route('owner.dashboard');
         }
+
         return redirect()->route('pos.index');
     })->name('dashboard');
 

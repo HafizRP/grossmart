@@ -136,12 +136,12 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
     <PosLayout title="Riwayat Nota Penjualan - Grossmart">
       <div className="space-y-4">
         {/* Header & Filter */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border-2 border-gray-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl">
           <div>
-            <h2 className="text-2xl font-black text-gray-950">
+            <h2 className="text-2xl font-black text-white">
               Riwayat Nota Belanja
             </h2>
-            <p className="text-sm font-bold text-gray-600">
+            <p className="text-sm font-bold text-slate-400 mt-0.5">
               Cetak ulang struk kasir, kirim nota via WhatsApp, atau batalkan nota salah pencet.
             </p>
           </div>
@@ -152,17 +152,17 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nomor nota / pembeli..."
-              className="w-full min-h-[48px] px-4 font-bold border-2 border-gray-300 rounded-xl focus:border-emerald-600"
+              className="w-full min-h-[48px] px-4 font-bold border-2 border-slate-700 rounded-xl focus:border-emerald-500 bg-slate-950 text-white placeholder-slate-500 focus:outline-none"
             />
           </div>
         </div>
 
         {/* Tabel Riwayat Penjualan */}
-        <div className="bg-white rounded-3xl border-2 border-gray-200 overflow-hidden shadow-sm">
+        <div className="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-wider">
+                <tr className="bg-slate-950/80 text-slate-400 text-xs sm:text-sm font-black uppercase tracking-wider border-b border-slate-800">
                   <th className="p-4">No. Nota</th>
                   <th className="p-4">Waktu & Kasir</th>
                   <th className="p-4">Pembeli</th>
@@ -172,7 +172,7 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
                   <th className="p-4 text-right">Tindakan</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-sm font-bold text-gray-800">
+              <tbody className="divide-y divide-slate-800 text-sm font-bold text-slate-200">
                 {filteredSales.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="p-10 text-center text-gray-400 font-bold">
@@ -181,31 +181,31 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
                   </tr>
                 ) : (
                   filteredSales.map((s) => (
-                    <tr key={s.id} className="hover:bg-gray-50/80 transition-colors">
-                      <td className="p-4 font-mono font-black text-base text-gray-950">
+                    <tr key={s.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="p-4 font-mono font-black text-base text-white">
                         {s.invoice_number}
                       </td>
 
                       <td className="p-4">
-                        <span className="block">{formatTanggalWaktu(s.created_at)}</span>
-                        <span className="text-xs text-gray-500 font-semibold">Kasir: {s.cashier_name}</span>
+                        <span className="block text-slate-200">{formatTanggalWaktu(s.created_at)}</span>
+                        <span className="text-xs text-slate-400 font-semibold">Kasir: {s.cashier_name}</span>
                       </td>
 
                       <td className="p-4">
                         {s.customer_name ? (
-                          <span className="font-extrabold text-gray-900">{s.customer_name}</span>
+                          <span className="font-extrabold text-white">{s.customer_name}</span>
                         ) : (
-                          <span className="text-gray-400">Umum</span>
+                          <span className="text-slate-500">Umum</span>
                         )}
                       </td>
 
                       <td className="p-4">
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-gray-100 text-gray-800">
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-slate-800 text-slate-300 border border-slate-700">
                           {s.payment_method}
                         </span>
                       </td>
 
-                      <td className="p-4 text-base font-black text-emerald-700">
+                      <td className="p-4 text-base font-black text-emerald-400">
                         {formatRupiah(s.total_amount)}
                       </td>
 
@@ -213,8 +213,8 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
                         <span
                           className={`px-2.5 py-1 rounded-lg text-xs font-black ${
                             s.status === 'COMPLETED'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-rose-100 text-rose-800'
+                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                              : 'bg-rose-950 text-rose-300 border border-rose-800'
                           }`}
                         >
                           {s.status === 'COMPLETED' ? 'LUNAS' : 'BATAL (VOID)'}
@@ -225,14 +225,14 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
                         <button
                           type="button"
                           onClick={() => setSelectedSale(s)}
-                          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 text-xs font-black cursor-pointer transition-all"
+                          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700 text-xs font-black cursor-pointer transition-all"
                         >
                           📄 Rincian
                         </button>
                         <button
                           type="button"
                           onClick={() => handleOpenReceipt(s)}
-                          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200 text-xs font-black cursor-pointer transition-all"
+                          className="min-h-[44px] px-3.5 py-2 rounded-xl bg-emerald-950 text-emerald-300 hover:bg-emerald-900 border border-emerald-800 text-xs font-black cursor-pointer transition-all"
                         >
                           🖨️ Cetak
                         </button>
@@ -244,7 +244,7 @@ export const SalesIndex: React.FC<SalesIndexProps> = ({
                               setVoidSale(s);
                               setVoidReason('');
                             }}
-                            className="min-h-[44px] px-3.5 py-2 rounded-xl bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200 text-xs font-black cursor-pointer transition-all"
+                            className="min-h-[44px] px-3.5 py-2 rounded-xl bg-rose-950 text-rose-300 hover:bg-rose-900 border border-rose-800 text-xs font-black cursor-pointer transition-all"
                           >
                             🚫 Batal Nota
                           </button>

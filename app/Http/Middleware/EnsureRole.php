@@ -11,7 +11,7 @@ class EnsureRole
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
@@ -23,6 +23,7 @@ class EnsureRole
 
         if (! $user->is_active) {
             auth()->logout();
+
             return redirect()->route('login')->withErrors(['username' => 'Akun Anda dinonaktifkan. Hubungi pemilik toko.']);
         }
 
@@ -31,6 +32,7 @@ class EnsureRole
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Akses khusus Pemilik Toko.'], 403);
             }
+
             return redirect()->route('pos.index')->with('error', 'Hanya Pemilik Toko yang berhak mengakses menu tersebut.');
         }
 

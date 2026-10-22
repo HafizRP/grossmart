@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 import { sound } from '@/Utils/sound';
 
 export interface NavItem {
@@ -23,8 +24,8 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
     <nav
       aria-label="Navigasi Utama Ponsel"
       className="
-        fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-gray-200
-        shadow-[0_-4px_16px_rgba(0,0,0,0.08)] sm:hidden
+        fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-slate-800
+        shadow-[0_-4px_20px_rgba(0,0,0,0.5)] sm:hidden
         safe-area-bottom pb-safe
       "
     >
@@ -33,7 +34,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
           const isActive = !!item.active;
 
           return (
-            <a
+            <Link
               key={item.id}
               href={item.href}
               onClick={(e) => {
@@ -47,14 +48,14 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                 relative flex flex-col items-center justify-center py-1 px-1 rounded-2xl
                 transition-all duration-100 touch-manipulation cursor-pointer select-none
                 ${isActive
-                  ? 'text-emerald-700 font-black'
-                  : 'text-gray-600 hover:text-gray-900 font-bold'
+                  ? 'text-emerald-400 font-black'
+                  : 'text-slate-400 hover:text-white font-bold'
                 }
               `}
             >
               {/* Indikator Aktif Atas */}
               {isActive && (
-                <span className="absolute top-0 w-10 h-1.5 bg-emerald-600 rounded-full" />
+                <span className="absolute top-0 w-10 h-1.5 bg-emerald-500 rounded-full" />
               )}
 
               {/* Ikon dengan Container Sentuh */}
@@ -62,7 +63,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                 <div
                   className={`
                     p-1.5 rounded-xl transition-colors
-                    ${isActive ? 'bg-emerald-100 text-emerald-800' : 'text-gray-600'}
+                    ${isActive ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-400'}
                   `}
                 >
                   {item.icon}
@@ -80,7 +81,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               <span className="text-xs sm:text-sm tracking-tight truncate max-w-full mt-0.5">
                 {item.label}
               </span>
-            </a>
+            </Link>
           );
         })}
       </div>

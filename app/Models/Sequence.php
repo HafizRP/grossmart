@@ -30,7 +30,7 @@ class Sequence extends Model
                 ->lockForUpdate()
                 ->first();
 
-            if (!$seq) {
+            if (! $seq) {
                 $seq = self::create([
                     'prefix' => $prefix,
                     'current_date' => $date,
@@ -39,7 +39,7 @@ class Sequence extends Model
             }
 
             $seq->increment('last_number');
-            $padded = str_pad((string)$seq->last_number, $digits, '0', STR_PAD_LEFT);
+            $padded = str_pad((string) $seq->last_number, $digits, '0', STR_PAD_LEFT);
 
             return "{$prefix}-{$date}-{$padded}";
         });

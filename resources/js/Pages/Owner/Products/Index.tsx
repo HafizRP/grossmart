@@ -190,12 +190,12 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
     <OwnerLayout title="Katalog Produk & Stok - Grossmart" userName={user_name}>
       <div className="space-y-6">
         {/* Header & Aksi Tambah */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border-2 border-gray-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               Katalog Produk & Stok Barang
             </h2>
-            <p className="text-base font-bold text-gray-600 mt-0.5">
+            <p className="text-sm font-bold text-slate-400 mt-1">
               Kelola daftar barang, barcode, modal HPP rahasia, harga eceran, dan harga grosir.
             </p>
           </div>
@@ -214,15 +214,15 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
         </div>
 
         {/* Tab Aktif vs Tempat Sampah (Recycle Bin) */}
-        <div className="flex items-center justify-between border-b-2 border-gray-200">
+        <div className="flex items-center justify-between border-b border-slate-800">
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => setActiveTab('active')}
               className={`px-5 py-3 font-black text-base border-b-4 transition-colors cursor-pointer ${
                 activeTab === 'active'
-                  ? 'border-emerald-600 text-emerald-800'
-                  : 'border-transparent text-gray-500 hover:text-gray-900'
+                  ? 'border-emerald-500 text-emerald-400'
+                  : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
               Daftar Barang Aktif ({products.length})
@@ -232,8 +232,8 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
               onClick={() => setActiveTab('trash')}
               className={`px-5 py-3 font-black text-base border-b-4 transition-colors cursor-pointer ${
                 activeTab === 'trash'
-                  ? 'border-rose-600 text-rose-800'
-                  : 'border-transparent text-gray-500 hover:text-gray-900'
+                  ? 'border-rose-500 text-rose-400'
+                  : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
               Tempat Sampah ({trashed_products.length})
@@ -249,7 +249,7 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama barang / barcode / SKU..."
-              className="w-full min-h-[50px] px-4 text-base font-bold border-2 border-gray-300 rounded-2xl focus:border-emerald-600 bg-white"
+              className="w-full min-h-[50px] px-4 text-base font-bold border-2 border-slate-700 rounded-2xl focus:border-emerald-500 bg-slate-900 text-white placeholder-slate-500 focus:outline-none"
             />
           </div>
 
@@ -257,8 +257,10 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
             <button
               type="button"
               onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2.5 rounded-xl font-bold text-sm border-2 ${
-                selectedCategory === null ? 'bg-emerald-700 text-white border-emerald-800' : 'bg-white text-gray-700 border-gray-300'
+              className={`px-4 py-2.5 rounded-xl font-bold text-sm border-2 cursor-pointer transition-all ${
+                selectedCategory === null
+                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-md'
+                  : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
               }`}
             >
               Semua Kategori
@@ -268,8 +270,10 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
                 key={c.id}
                 type="button"
                 onClick={() => setSelectedCategory(c.id)}
-                className={`px-4 py-2.5 rounded-xl font-bold text-sm border-2 whitespace-nowrap ${
-                  selectedCategory === c.id ? 'bg-emerald-700 text-white border-emerald-800' : 'bg-white text-gray-700 border-gray-300'
+                className={`px-4 py-2.5 rounded-xl font-bold text-sm border-2 whitespace-nowrap cursor-pointer transition-all ${
+                  selectedCategory === c.id
+                    ? 'bg-emerald-600 text-white border-emerald-500 shadow-md'
+                    : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
                 }`}
               >
                 {c.name}
@@ -279,11 +283,11 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
         </div>
 
         {/* Mode Tabel (Tablet & Desktop: md:block) */}
-        <div className="hidden md:block bg-white rounded-3xl border-3 border-slate-200 overflow-hidden shadow-sm">
+        <div className="hidden md:block bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-wider">
+                <tr className="bg-slate-950/80 text-slate-400 text-xs sm:text-sm font-black uppercase tracking-wider border-b border-slate-800">
                   <th className="p-4">Barang / SKU</th>
                   <th className="p-4">Kategori</th>
                   <th className="p-4">Harga Kulak</th>
@@ -293,7 +297,7 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
                   <th className="p-4 text-right">Tindakan</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-sm font-bold text-gray-800">
+              <tbody className="divide-y divide-slate-800 text-sm font-bold text-slate-200">
                 {filteredProducts.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="p-12 text-center text-gray-400 font-bold">
@@ -302,23 +306,23 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
                   </tr>
                 ) : (
                   filteredProducts.map((p) => (
-                    <tr key={p.id} className="hover:bg-gray-50/80 transition-colors">
+                    <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
                       <td className="p-4">
-                        <span className="font-black text-base text-gray-950 block leading-tight">
+                        <span className="font-black text-base text-white block leading-tight">
                           {p.name}
                         </span>
-                        <span className="text-xs font-mono text-gray-500">
+                        <span className="text-xs font-mono text-slate-400">
                           SKU: {p.sku} {p.barcode ? `| Barcode: ${p.barcode}` : ''}
                         </span>
                       </td>
 
                       <td className="p-4">
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-gray-100 text-gray-700">
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-black bg-slate-800 text-slate-300 border border-slate-700">
                           {p.category_name || '-'}
                         </span>
                       </td>
 
-                      <td className="p-4 font-extrabold text-gray-600">
+                      <td className="p-4 font-extrabold text-slate-400">
                         {formatRupiah(p.cost_price)}
                       </td>
 
@@ -397,56 +401,56 @@ export const ProductsIndex: React.FC<ProductsIndexProps> = ({
         {/* Mode Kartu Sentuh Responsif (Khusus Ponsel: md:hidden) */}
         <div className="md:hidden space-y-2.5">
           {filteredProducts.length === 0 ? (
-            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-400 font-bold">
+            <div className="p-8 text-center bg-slate-900 rounded-2xl border border-slate-800 text-slate-500 font-bold">
               Tidak ada data barang yang sesuai
             </div>
           ) : (
             filteredProducts.map((p) => (
-              <div key={p.id} className="p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm space-y-3">
+              <div key={p.id} className="p-4 bg-slate-900 rounded-2xl border border-slate-800 shadow-lg space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h4 className="text-base font-black text-slate-900 leading-snug">{p.name}</h4>
-                    <span className="text-xs font-mono text-slate-500">SKU: {p.sku} {p.barcode ? `• Barcode: ${p.barcode}` : ''}</span>
+                    <h4 className="text-base font-black text-white leading-snug">{p.name}</h4>
+                    <span className="text-xs font-mono text-slate-400">SKU: {p.sku} {p.barcode ? `• Barcode: ${p.barcode}` : ''}</span>
                   </div>
                   <span
                     className={`px-2.5 py-1 rounded-xl text-xs font-black shrink-0 ${
                       p.current_stock <= 0
-                        ? 'bg-rose-100 text-rose-900'
+                        ? 'bg-rose-950 text-rose-300 border border-rose-800'
                         : p.current_stock <= p.min_stock_alert
-                        ? 'bg-amber-100 text-amber-950'
-                        : 'bg-emerald-100 text-emerald-900'
+                        ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                        : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                     }`}
                   >
                     {p.current_stock} {p.unit}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-baseline pt-2 border-t border-slate-100">
-                  <span className="text-xs font-bold text-slate-500">Modal: {formatRupiah(p.cost_price)}</span>
-                  <span className="text-lg font-black text-emerald-700">{formatRupiah(p.selling_price)} / {p.unit}</span>
+                <div className="flex justify-between items-baseline pt-2 border-t border-slate-800">
+                  <span className="text-xs font-bold text-slate-400">Modal: {formatRupiah(p.cost_price)}</span>
+                  <span className="text-lg font-black text-emerald-400">{formatRupiah(p.selling_price)} / {p.unit}</span>
                 </div>
 
-                <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                <div className="flex items-center gap-2 pt-1 border-t border-slate-800">
                   {activeTab === 'active' ? (
                     <>
                       <button
                         type="button"
                         onClick={() => setBarcodePrintProduct(p)}
-                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-slate-100 font-black text-xs text-slate-800 border border-slate-200 flex items-center justify-center gap-1"
+                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-slate-800 font-black text-xs text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center justify-center gap-1"
                       >
                         🏷️ Barcode
                       </button>
                       <button
                         type="button"
                         onClick={() => openEditModal(p)}
-                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-blue-50 font-black text-xs text-blue-800 border border-blue-200 flex items-center justify-center gap-1"
+                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-blue-950 font-black text-xs text-blue-300 border border-blue-800 hover:bg-blue-900 flex items-center justify-center gap-1"
                       >
                         ✏️ Ubah
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteProduct(p)}
-                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-rose-50 font-black text-xs text-rose-800 border border-rose-200 flex items-center justify-center gap-1"
+                        className="flex-1 min-h-[44px] px-2 py-2 rounded-xl bg-rose-950 font-black text-xs text-rose-300 border border-rose-800 hover:bg-rose-900 flex items-center justify-center gap-1"
                       >
                         🗑️ Hapus
                       </button>

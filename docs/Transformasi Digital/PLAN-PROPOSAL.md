@@ -46,7 +46,7 @@
 | 3 | **Latar Belakang** | ~750 kata | 2.5 hal | Realitas 3,9 juta warung kelontong, kesenjangan pencatatan manual vs ritel modern, 4 titik kendala operasional (selisih laci malam hari, salah ketik kalkulator kecil, buku utang basah, titipan kue tetangga), rumusan & batasan masalah. |
 | 4 | **Tujuan dan Manfaat Aplikasi** | ~350 kata | 1.0 hal | 4 tujuan terukur (eliminasi salah hitung kembalian, rekap <15 menit, akurasi stok >95%, kemandirian kasir lansia), 4 manfaat multi-pihak (pemilik, kasir, warga penitip, ekonomi warung). |
 | 5 | **Tinjauan Singkat dan Posisi Kebaruan** | ~700 kata | 2.5 hal | Tinjauan objektif 4 POS (Moka, Majoo, Kasir Pintar, iReap), kesenjangan biaya SaaS & antarmuka rapat, **Tabel 1: Komparasi Solusi vs Grossmart**, 4 kebaruan utama (*blind cash-up*, kalkulator pecahan rupiah, arsitektur tanpa biaya sewa bulanan, aksesibilitas lansia). |
-| 6 | **Deskripsi dan Solusi Digital** | ~800 kata | 3.0 hal | Konsep aplikasi Laravel 11 + React 18 Inertia, 5 fungsi operasional, alur kerja buka kasir s.d. tutup toko (*rujuk Lampiran 2*), skema data 39 tabel (32 model Eloquent), PWA offline resilience. |
+| 6 | **Deskripsi dan Solusi Digital** | ~800 kata | 3.0 hal | Konsep aplikasi Laravel 11 + React 18 Inertia, 5 fungsi operasional, alur kerja buka kasir s.d. tutup toko (*rujuk Lampiran 2*), skema data 39 tabel (32 model Eloquent, 21 controller), PWA offline resilience. |
 | 7 | **Metodologi dan Rancangan Teknis** | ~500 kata | 1.5 hal | 4 tahapan rekayasa perangkat lunak iteratif berorientasi pengguna, arsitektur sistem (*rujuk Lampiran 1*), hak akses RBAC (pemilik vs kasir), proteksi transaksi ACID dan pengujian otomatis PHPUnit. |
 | 8 | **Analisis Kebutuhan Pengguna** | ~400 kata | 1.5 hal | Karakteristik persona pengelola (Pak Bambang 58 th) dan kasir (Ibu Sumiyati 61 th) pada gerai mitra RPTRA Jatinegara, solusi ergonomi (tombol 56px, huruf besar 16–44px, suara *beep* & *chime*), 100% istilah bahasa Indonesia ramah warung. |
 | 9 | **Dampak Kebermanfaatan dan Keberlanjutan** | ~350 kata | 1.0 hal | Target terukur (waktu rekap, selisih kas, akurasi persediaan), target uji usabilitas SUS > 75, model mandiri tanpa biaya langganan, prosedur nota darurat saat mati listrik. |
@@ -197,7 +197,7 @@ Setiap butir di bawah membedah instruksi resmi dari berkas `Template proposal - 
   - Pendekatan teknologi secara konseptual yang realistis dan aplikatif.
   - Memperhatikan aspek etika, perlindungan data, keamanan sistem, dan keberlanjutan.
 - **Rencana Pengisian Subpoint:**
-  - *Subpoint 7.1 — Konsep Solusi & Arsitektur Monolitik Modern:* Framework Laravel 11 (backend bisnis & integritas data), React 18 + TypeScript (antarmuka reaktif), Inertia.js (integrasi tanpa API boilerplate terpisah), MySQL/MariaDB InnoDB (transaksi ACID).
+  - *Subpoint 7.1 — Konsep Solusi & Arsitektur Monolitik Modern:* Framework Laravel 11 dengan 21 controller terstruktur (backend bisnis & integritas data), React 18 + TypeScript (antarmuka reaktif), Inertia.js 2 (integrasi tanpa API boilerplate terpisah), MySQL/MariaDB InnoDB (transaksi ACID).
   - *Subpoint 7.2 — Lima Pilar Fungsional Grossmart:*
     1. Modul Kasir POS Cepat Ergonomis: Tombol uang pas, tombol pecahan lembaran rupiah, parkir keranjang belanja.
     2. Modul Kontrol Shift & Laci Kas: Pencatatan modal awal, setor kas aman ke pemilik (*cash drop*), tutup kasir buta.
@@ -205,7 +205,7 @@ Setiap butir di bawah membedah instruksi resmi dari berkas `Template proposal - 
     4. Modul Transaksi Komunitas: Fondasi skema titipan warga dan pencatatan buku utang tempo pelanggan.
     5. Modul Dashboard Pemilik Toko: Ringkasan omzet, laba kotor, dan log audit operasional.
 - *Subpoint 7.3 — Alur Pengguna Terpadu (Unified User Flow):* Narasi alur operasional dari buka toko jam 06.00 hingga tutup toko jam 21.00; rujuk *Gambar 2 di Lampiran 2*.
-  - *Subpoint 7.4 — Skema Basis Data Terstruktur:* Penjelasan relasi 31 tabel domain bisnis (plus 8 tabel framework Laravel, total 39 tabel dengan 32 model Eloquent) dengan penegakan *foreign key constraints* dan *indexing*.
+  - *Subpoint 7.4 — Skema Basis Data Terstruktur:* Penjelasan relasi 31 tabel domain bisnis (plus 8 tabel framework Laravel, total 39 tabel dengan 32 model Eloquent dan 21 controller) dengan penegakan *foreign key constraints* dan *indexing*.
   - *Subpoint 7.5 — Arsitektur PWA & Strategi Offline Resilience:* Service Worker caching mandiri (*Cache-First* untuk antarmuka aset CSS/JS; *Network-Only* dengan penanganan error ramah untuk transaksi uang kas).
 
 ---

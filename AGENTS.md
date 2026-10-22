@@ -12,9 +12,14 @@ Setiap kali melakukan penambahan fitur, perubahan skema database, atau modifikas
    - Sesuaikan klaim fungsional, matriks fitur, jumlah tabel database, dan arsitektur di `docs/Transformasi Digital/PROPOSAL_FULL.md` dan `docs/Transformasi Digital/PLAN-PROPOSAL.md`.
    - Pastikan tidak ada klaim palsu (*false claims*) antara status kode riil vs deskripsi proposal.
 2. **Jalankan Pipeline Generate & Audit Proposal:**
-   - Sebelum tugas diselesaikan, jalankan:
+   - Sebelum tugas diselesaikan, jalankan sinkronisasi proposal (otomatis mendeteksi agen aktif/terpasang di sistem) dan audit validasi:
      ```bash
-     ./scripts/generate_proposal.sh
+     # Sinkronisasi proposal (otomatis mendeteksi agen: omp / claude / cursor / aider / script)
+     ./scripts/sync.sh
+     # atau ./scripts/generate_proposal.sh
+
+     # Validasi kepatuhan naskah & dokumen Word:
      ./scripts/audit_proposal.sh
      ```
-   - Pastikan `generate_proposal.sh` berhasil menyinkronkan kode ke markdown & merender DOCX, dan `audit_proposal.sh` meloloskan status `STATUS_CLEAR`.
+   - Opsi override manual (opsional): `./scripts/sync.sh --agent=<tipe>` atau `SYNC_AGENT=<tipe>`.
+   - Pastikan sinkronisasi berhasil menyelaraskan kode ke markdown & merender DOCX, dan `audit_proposal.sh` meloloskan status `STATUS_CLEAR`.

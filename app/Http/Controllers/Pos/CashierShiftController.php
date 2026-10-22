@@ -7,7 +7,6 @@ use App\Models\AuditLog;
 use App\Models\CashierShift;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class CashierShiftController extends Controller
 {

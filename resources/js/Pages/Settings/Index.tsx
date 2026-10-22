@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import { PosLayout } from '@/Layouts/PosLayout';
+import { OwnerLayout } from '@/Layouts/OwnerLayout';
 import { Button } from '@/Components/UI/Button';
-import { Input } from '@/Components/UI/Input';
 import { sound } from '@/Utils/sound';
 import { useToast } from '@/Components/UI/Toast';
 import { promptPWAInstall } from '@/registerServiceWorker';
@@ -19,6 +18,7 @@ export interface StoreSettings {
 export interface SettingsIndexProps {
   settings: StoreSettings;
   is_owner?: boolean;
+  user_name?: string;
 }
 
 export const SettingsIndex: React.FC<SettingsIndexProps> = ({
@@ -30,7 +30,8 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
     cash_rounding: true,
     idle_timeout_minutes: 45,
   },
-  is_owner = false,
+  is_owner = true,
+  user_name = 'Pemilik Toko',
 }) => {
   const toast = useToast();
   const [storeName, setStoreName] = useState<string>(settings.store_name);
@@ -42,7 +43,6 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
 
   // Audio Settings (Langsung tersimpan di SoundManager & LocalStorage)
   const [volume, setVolumeState] = useState<number>(sound.volume);
-  const [isMuted, setIsMuted] = useState<boolean>(sound.isMuted);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
@@ -63,7 +63,7 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
     sound.playClick();
     setIsSaving(true);
 
-    router.post('/settings', {
+    router.post('/owner/settings', {
       store_name: storeName,
       store_address: storeAddress,
       store_phone: storePhone,
@@ -76,39 +76,45 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
         sound.playChime();
         toast.success('Pengaturan toko berhasil disimpan');
       },
-      onError: () => {
+      onError: (errors) => {
         setIsSaving(false);
         sound.playError();
-        toast.error('Gagal menyimpan pengaturan');
+        const errFirst = Object.values(errors)[0];
+        toast.error(typeof errFirst === 'string' ? errFirst : 'Gagal menyimpan pengaturan');
       },
     });
   };
 
   return (
-    <PosLayout title="Pengaturan Toko - Grossmart">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white p-6 rounded-3xl border-2 border-gray-200 shadow-sm">
-          <h2 className="text-2xl font-black text-gray-950">
-            Pengaturan Aplikasi Toko & Audio
-          </h2>
-          <p className="text-base font-bold text-gray-600 mt-0.5">
-            Atur nama toko pada struk, volume audio umpan balik bip, dan instalasi PWA.
-          </p>
+    <OwnerLayout title="Pengaturan Toko - Grossmart" userName={user_name}>
+      <Head title="Pengaturan Toko - Grossmart" />
+
+      <div className="max-w-4xl space-y-6">
+        {/* Header Banner */}
+        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">⚙️</span>
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Pengaturan Aplikasi Toko & Audio
+              </h2>
+              <p className="text-sm font-bold text-slate-400 mt-1">
+                Atur identitas warung pada struk belanja, volume audio bip kasir, dan instalasi PWA.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* 1. Pengaturan Suara & Audio Feedback */}
-        <div className="bg-white p-6 rounded-3xl border-2 border-gray-200 shadow-sm space-y-4">
-          <h3 className="text-xl font-black text-gray-950 flex items-center gap-2">
-            <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-            </svg>
+        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+          <h3 className="text-xl font-black text-white flex items-center gap-2.5">
+            <span className="text-2xl">🔊</span>
             <span>Umpan Balik Suara (Audio Feedback Ramah Lansia)</span>
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div>
-              <label htmlFor="volume-range-input" className="block text-sm font-bold text-gray-700 mb-2">
+              <label htmlFor="volume-range-input" className="block text-xs font-black uppercase tracking-wider text-slate-400 mb-2">
                 Tingkat Kekerasan Suara: {Math.round(volume * 100)}%
               </label>
               <input
@@ -119,7 +125,7 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
                 step="0.05"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                className="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
             </div>
 
@@ -127,21 +133,21 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
               <button
                 type="button"
                 onClick={() => handleTestSound('beep')}
-                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-800 font-black text-sm border-2 border-slate-300 cursor-pointer transition-all active:scale-95"
+                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-sm border border-slate-700 cursor-pointer transition-all active:scale-95"
               >
                 🔊 Tes Bip Barcode
               </button>
               <button
                 type="button"
                 onClick={() => handleTestSound('error')}
-                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-800 font-black text-sm border-2 border-slate-300 cursor-pointer transition-all active:scale-95"
+                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-rose-950 text-rose-300 font-black text-sm border border-slate-700 hover:border-rose-800 cursor-pointer transition-all active:scale-95"
               >
                 ⚠️ Tes Buzz Salah
               </button>
               <button
                 type="button"
                 onClick={() => handleTestSound('chime')}
-                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-800 font-black text-sm border-2 border-slate-300 cursor-pointer transition-all active:scale-95"
+                className="min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-emerald-950 text-emerald-300 font-black text-sm border border-slate-700 hover:border-emerald-800 cursor-pointer transition-all active:scale-95"
               >
                 🔔 Tes Chime Lunas
               </button>
@@ -150,22 +156,23 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
         </div>
 
         {/* 2. PWA & Pemasangan Aplikasi di HP */}
-        <div className="bg-white p-6 rounded-3xl border-2 border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-xl font-black text-gray-950">
-              Pemasangan Aplikasi di HP / Komputer (PWA)
+            <h3 className="text-xl font-black text-white flex items-center gap-2.5">
+              <span className="text-2xl">📱</span>
+              <span>Pemasangan Aplikasi di HP / Tablet (PWA)</span>
             </h3>
-            <p className="text-sm font-bold text-gray-600 mt-1">
+            <p className="text-xs sm:text-sm font-bold text-slate-400 mt-1">
               Pasang Grossmart langsung di layar utama agar berjalan layar penuh tanpa address bar browser.
             </p>
           </div>
 
           <Button
-            variant="primary"
+            variant="secondary"
             size="lg"
             soundFeedback="click"
             onClick={promptPWAInstall}
-            className="text-base font-black px-6"
+            className="text-sm font-black px-6 min-h-[50px] bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
           >
             Pasang Aplikasi Sekarang
           </Button>
@@ -173,72 +180,105 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
 
         {/* 3. Formulir Identitas Toko (Khusus Pemilik) */}
         {is_owner && (
-          <form onSubmit={handleSaveSettings} className="bg-white p-6 rounded-3xl border-2 border-gray-200 shadow-sm space-y-4">
-            <h3 className="text-xl font-black text-gray-950">
-              Identitas Toko pada Struk Belanja
+          <form onSubmit={handleSaveSettings} className="bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+            <h3 className="text-xl font-black text-white flex items-center gap-2.5">
+              <span className="text-2xl">🧾</span>
+              <span>Identitas Warung pada Struk Belanja & Kasir</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-                <Input
-                  label="Nama Toko / Warung:"
+              <div className="sm:col-span-2 space-y-1.5">
+                <label htmlFor="store-name-input" className="block text-xs font-black uppercase tracking-wider text-slate-300">
+                  Nama Warung / Toko:
+                </label>
+                <input
+                  id="store-name-input"
                   type="text"
                   value={storeName}
                   onChange={(e) => setStoreName(e.target.value)}
                   placeholder="Contoh: TOKO KELONTONG BERKAH"
                   required
+                  className="w-full min-h-[50px] px-3.5 text-base font-bold bg-slate-950 text-white border-2 border-slate-700 rounded-xl focus:border-emerald-500 focus:outline-none"
                 />
               </div>
 
-              <div className="sm:col-span-2">
-                <Input
-                  label="Alamat Toko Lengkap:"
+              <div className="sm:col-span-2 space-y-1.5">
+                <label htmlFor="store-address-input" className="block text-xs font-black uppercase tracking-wider text-slate-300">
+                  Alamat Lengkap Toko:
+                </label>
+                <input
+                  id="store-address-input"
                   type="text"
                   value={storeAddress}
                   onChange={(e) => setStoreAddress(e.target.value)}
                   placeholder="Contoh: Jl. Diponegoro No. 45, Pasar Anyar"
                   required
+                  className="w-full min-h-[50px] px-3.5 text-base font-bold bg-slate-950 text-white border-2 border-slate-700 rounded-xl focus:border-emerald-500 focus:outline-none"
                 />
               </div>
 
-              <Input
-                label="Nomor Telepon / WhatsApp Toko:"
-                type="text"
-                value={storePhone}
-                onChange={(e) => setStorePhone(e.target.value)}
-                placeholder="Contoh: 0812-3456-7890"
-              />
+              <div className="space-y-1.5">
+                <label htmlFor="store-phone-input" className="block text-xs font-black uppercase tracking-wider text-slate-300">
+                  Nomor HP / WhatsApp Toko:
+                </label>
+                <input
+                  id="store-phone-input"
+                  type="text"
+                  value={storePhone}
+                  onChange={(e) => setStorePhone(e.target.value)}
+                  placeholder="Contoh: 0812-3456-7890"
+                  required
+                  className="w-full min-h-[50px] px-3.5 text-base font-bold bg-slate-950 text-white border-2 border-slate-700 rounded-xl focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
 
-              <Input
-                label="Waktu Idle Kunci Sesi Kasir (Menit):"
-                type="number"
-                min="5"
-                max="120"
-                value={idleTimeout}
-                onChange={(e) => setIdleTimeout(parseInt(e.target.value, 10) || 45)}
-              />
+              <div className="space-y-1.5">
+                <label htmlFor="idle-timeout-input" className="block text-xs font-black uppercase tracking-wider text-slate-300">
+                  Waktu Kunci Sesi Kasir Otomatis (Menit):
+                </label>
+                <input
+                  id="idle-timeout-input"
+                  type="number"
+                  min="5"
+                  max="240"
+                  value={idleTimeout}
+                  onChange={(e) => setIdleTimeout(parseInt(e.target.value, 10) || 45)}
+                  required
+                  className="w-full min-h-[50px] px-3.5 text-base font-bold bg-slate-950 text-white border-2 border-slate-700 rounded-xl focus:border-emerald-500 focus:outline-none tabular-nums"
+                />
+              </div>
 
-              <div className="sm:col-span-2">
-                <Input
-                  label="Catatan Kaki Struk (Footer):"
+              <div className="sm:col-span-2 space-y-1.5">
+                <label htmlFor="receipt-footer-input" className="block text-xs font-black uppercase tracking-wider text-slate-300">
+                  Catatan Kaki Struk Belanja (Footer):
+                </label>
+                <input
+                  id="receipt-footer-input"
                   type="text"
                   value={receiptFooter}
                   onChange={(e) => setReceiptFooter(e.target.value)}
                   placeholder="Contoh: Terima kasih atas kunjungan Anda!"
+                  required
+                  className="w-full min-h-[50px] px-3.5 text-base font-bold bg-slate-950 text-white border-2 border-slate-700 rounded-xl focus:border-emerald-500 focus:outline-none"
                 />
               </div>
 
               <div className="sm:col-span-2 pt-2">
-                <label className="flex items-center gap-3 cursor-pointer">
+                <label className="flex items-center gap-3 cursor-pointer p-4 bg-slate-950 border border-slate-800 rounded-2xl">
                   <input
                     type="checkbox"
                     checked={cashRounding}
                     onChange={(e) => setCashRounding(e.target.checked)}
-                    className="w-6 h-6 rounded text-emerald-600 border-2 border-gray-300"
+                    className="w-6 h-6 rounded text-emerald-600 border-2 border-slate-700 bg-slate-900 focus:ring-emerald-500"
                   />
-                  <span className="text-base font-extrabold text-gray-900">
-                    Aktifkan Pembulatan Kasir Otomatis (Cash Rounding ke Rp 100 terdekat untuk uang tunai)
-                  </span>
+                  <div>
+                    <span className="text-sm font-black text-white block">
+                      Aktifkan Pembulatan Kasir Otomatis (Cash Rounding)
+                    </span>
+                    <span className="text-xs text-slate-400 font-bold block mt-0.5">
+                      Membulatkan nominal kembalian ke kelipatan Rp 100 terdekat agar kasir tidak kekurangan koin receh.
+                    </span>
+                  </div>
                 </label>
               </div>
             </div>
@@ -250,15 +290,15 @@ export const SettingsIndex: React.FC<SettingsIndexProps> = ({
                 size="lg"
                 isLoading={isSaving}
                 soundFeedback="chime"
-                className="text-lg font-black px-8"
+                className="text-base font-black px-8 min-h-[52px] bg-emerald-600 hover:bg-emerald-500 shadow-xl"
               >
-                Simpan Perubahan
+                Simpan Perubahan Pengaturan ➔
               </Button>
             </div>
           </form>
         )}
       </div>
-    </PosLayout>
+    </OwnerLayout>
   );
 };
 

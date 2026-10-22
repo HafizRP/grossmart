@@ -14,7 +14,7 @@ Universitas Bina Sarana Informatika
 
 
 ## ABSTRAK
-Toko kelontong mandiri (~3,9 juta unit di Indonesia) menyediakan kebutuhan pokok harian warga permukiman secara dekat dan terjangkau. Namun, keberadaannya kian terdesak oleh jaringan minimarket waralaba modern yang didukung sistem kasir otomatis. Sebagian besar pengelola warung tradisional berusia paruh baya hingga lanjut usia yang masih mengandalkan pencatatan manual di buku kertas, nota sobekan, dan kalkulator saku. Cara manual ini menimbulkan berbagai persoalan harian: antrean jam sibuk melambat, rawan selisih uang laci malam hari, catatan bon utang langganan terselip, dan pembukuan makanan titipan warga sering keliru. Aplikasi kasir komersial di pasaran umumnya mematok biaya sewa bulanan yang memberatkan margin tipis warung, menggunakan antarmuka berhuruf kecil yang rumit bagi lansia, serta tidak menyediakan alur tutup kasir buta (*blind cash-up*). Proposal ini mengusulkan **Grossmart**, aplikasi web kasir operasional mandiri (*self-hosted*) berbasis *Laravel 11*, *React 18*, *Inertia.js*, dan *MySQL InnoDB* yang dirancang khusus memenuhi kebutuhan warung tradisional. Grossmart memadukan antarmuka ramah lansia berstandar *WCAG 2.1 AAA* (tombol sentuh lebar >56px, kontras tinggi, tombol cepat pecahan Rupiah, isyarat suara), alur tutup kasir buta dengan kalkulator hitung fisik uang Rupiah tanpa saldo terbuka di layar, konversi otomatis kemasan dus ke eceran (*repack*), pencatatan bon utang langganan, serta fondasi data makanan titipan warga. Uji coba fungsional via *PHPUnit* dan pengujian lapangan pada toko mitra disiapkan untuk memvalidasi bahwa Grossmart mampu memangkas waktu rekap harian dari 60 menit menjadi <15 menit, meminimalkan selisih kas laci, serta mencapai skor *System Usability Scale* (SUS) > 75 pada kasir lansia.
+Sekitar 3,9 juta toko kelontong di Indonesia melayani kebutuhan harian warga di kawasan permukiman. Sebagian besar warung ini dikelola oleh pedagang berusia paruh baya hingga lanjut usia yang masih mengandalkan buku kertas, nota lepas, dan kalkulator saku. Pencatatan manual membuat antrean jam sibuk lambat, memicu selisih uang kas laci saat tutup toko malam hari, serta membuat catatan bon utang dan barang titipan warga mudah terselip. Di sisi lain, aplikasi kasir komersial membebani pedagang dengan biaya sewa bulanan dan memiliki antarmuka berhuruf kecil yang sulit dipakai kasir lanjut usia. Proposal ini mengusulkan **Grossmart**, aplikasi kasir mandiri (*self-hosted*) berbasis *Laravel 11*, *React 18*, *Inertia.js*, dan *MySQL InnoDB* yang dirancang untuk kebutuhan toko kelontong. Grossmart menerapkan antarmuka ramah lansia berstandar *WCAG 2.1 AAA* dengan tombol sentuh berukuran minimal 56px, teks kontras tinggi, tombol cepat pecahan Rupiah, dan isyarat audio. Untuk mencegah manipulasi kas, sistem menggunakan alur tutup kasir buta (*blind cash-up*) dengan kalkulator fisik lembaran uang tanpa menampilkan saldo sistem di layar kasir. Sistem juga memfasilitasi konversi kemasan dus ke eceran (*repack*), pencatatan bon utang langganan, dan penataan data barang titipan warga. Pengujian fungsional otomatis *PHPUnit* dan uji lapangan pada toko mitra menargetkan pemangkasan waktu rekap harian dari 60 menit menjadi di bawah 15 menit, penekanan selisih kas laci, serta capaian skor *System Usability Scale* (SUS) di atas 75.
 
 **Kata kunci:** toko kelontong, aplikasi kasir, ramah lansia, tutup kasir buta, transformasi digital.
 
@@ -22,72 +22,72 @@ Toko kelontong mandiri (~3,9 juta unit di Indonesia) menyediakan kebutuhan pokok
 
 ## Judul
 
-Proposal ini mengusung judul: **"Grossmart: Aplikasi Kasir dan Pengelolaan Operasional Toko Kelontong yang Ramah Pengguna Lanjut Usia"**.
+Proposal ini memilih judul: **"Grossmart: Aplikasi Kasir dan Pengelolaan Operasional Toko Kelontong yang Ramah Pengguna Lanjut Usia"**.
 
-Judul tersebut merangkum tiga fokus utama sistem:
-1. **Objek dan Sasaran Solusi:** Toko kelontong mandiri tradisional, dengan fokus kemudahan bagi pemilik dan kasir lansia (50 tahun ke atas) yang mengalami penurunan daya lihat dan kelenturan gerak jari.
-2. **Pendekatan dan Pemanfaatan Teknologi:** Aplikasi web monolitik modern berbasis *Laravel 11*, *React 18*, *Inertia.js*, dan *MySQL InnoDB*, berformat *Progressive Web App* (PWA) lokal mandiri tanpa biaya sewa bulanan.
-3. **Tujuan dan Dampak Nyata:** Mencegah salah hitung kembalian, meniadakan selisih kas laci lewat tutup kasir buta (*blind cash-up*), merapikan catatan bon utang langganan dan fondasi pencatatan barang titipan warga, serta mewujudkan kemandirian digital bagi usaha mikro tradisional.
+Judul ini mencakup tiga fokus utama:
+1. Sasaran pengguna: Toko kelontong mandiri yang dikelola pemilik dan kasir lanjut usia (50 tahun ke atas) dengan kendala penglihatan serta kelenturan jari.
+2. Landasan teknologi: Aplikasi web monolitik berbasis *Laravel 11*, *React 18*, *Inertia.js*, dan *MySQL InnoDB* berformat PWA lokal mandiri tanpa biaya sewa bulanan.
+3. Target operasional: Mencegah salah hitung kembalian, meniadakan selisih uang laci lewat tutup kasir buta (*blind cash-up*), serta menertibkan catatan bon utang langganan dan barang titipan warga.
 
 
 
 ## Latar Belakang
 
-Toko kelontong mandiri menjadi penopang utama perputaran belanja harian warga di kawasan permukiman. Data Asosiasi Pedagang mencatat sekitar 3,9 juta warung kelontong menopang distribusi sembako nasional. Namun, keberadaannya kian terdesak oleh jaringan minimarket waralaba modern dengan sistem kasir otomatis dan pengelolaan stok terpusat. Sebagian besar warung tradisional dikelola pedagang paruh baya hingga lanjut usia yang mengandalkan pembukuan kertas manual.
+Toko kelontong mandiri menggerakkan perputaran belanja harian warga di kawasan permukiman. Data Asosiasi Pedagang mencatat sekitar 3,9 juta warung kelontong menopang distribusi sembako nasional. Namun, warung kelontong menghadapi persaingan ketat dari minimarket waralaba yang didukung sistem kasir terpadu dan pengelolaan stok terpusat. Sebagian besar warung tradisional dikelola pedagang paruh baya hingga lanjut usia yang masih mengandalkan pencatatan manual di buku kertas.
 
-Hasil observasi lapangan pada toko mitra kami di RPTRA Jatinegara (unit gerai/koperasi kelontong komunitas warga, Jl. Swadaya No.12A 7, RT.7/RW.14, Jatinegara, Kec. Cakung, Jakarta Timur, beroperasi selama 10 tahun) yang dikelola oleh [DUMMY_REPLACE: H. Bambang Sudarsono] (58 tahun), mengidentifikasi empat kendala operasional utama:
-1. **Mata Cepat Lelah dan Risiko Salah Pencet Tombol:** Kasir lansia kerap mengalami penurunan daya lihat jarak dekat (rabun dekat) serta kelenturan jari yang berkurang. Layar kalkulator kecil menyulitkan pembacaan angka saat jam ramai pembeli. Salah ketik nominal (misalnya Rp 10.000 terpencet Rp 100.000) atau salah kembalian langsung merugikan toko.
-2. **Kelelahan Rekap Malam dan Selisih Uang Laci:** Saat toko tutup pukul 21.00 WIB, pemilik menghabiskan 45–60 menit mencocokkan tumpukan nota kertas dengan uang tunai di laci kasir. Rekap manual dalam kondisi lelah kerap menimbulkan selisih uang laci yang sulit dilacak.
-3. **Pencatatan Bon Utang Langganan yang Rawan Rusak dan Hilang:** Belanja tempo (bon utang) adalah bentuk relasi sosial khas warung bagi tetangga sekitar. Namun, buku catatan kertas mudah basah, sobek, atau terselip. Pemilik kesulitan memantau total utang yang belum lunas dan tanggal jatuh tempo, sehingga modal belanja kulakan sering terganggu.
-4. **Kerumitan Pembukuan Makanan Titipan Warga (Konsinyasi):** Warung menjadi andalan warga sekitar untuk menitipkan makanan olahan rumahan (seperti kue basah, kerupuk, atau gorengan). Selama ini, jumlah titipan datang, barang laku, sisa retur, dan bagi hasil hanya dicatat di secarik kertas lepas yang rawan tercecer atau keliru hitung.
+Observasi lapangan pada toko mitra kami di RPTRA Jatinegara (unit gerai kelontong komunitas warga, Jl. Swadaya No.12A 7, RT.7/RW.14, Jatinegara, Kec. Cakung, Jakarta Timur, beroperasi selama 10 tahun) yang dikelola oleh [DUMMY_REPLACE: H. Bambang Sudarsono] (58 tahun), mengidentifikasi empat kendala operasional utama:
+1. Penurunan daya lihat dan risiko salah tekan tombol: Kasir lanjut usia kerap mengalami rabun dekat dan kelenturan jari yang menurun. Layar kalkulator kecil menyulitkan pembacaan angka saat melayani pembeli di jam sibuk. Kesalahan input nominal (misalnya Rp 10.000 terpencet Rp 100.000) atau salah kembalian langsung menimbulkan kerugian bagi toko.
+2. Beban rekapitulasi malam hari dan selisih uang laci: Saat toko tutup pukul 21.00 WIB, pemilik menghabiskan 45 hingga 60 menit mencocokkan tumpukan nota kertas dengan uang fisik di laci kasir. Rekapitulasi manual saat kondisi fisik lelah kerap menimbulkan selisih uang kas yang sulit dilacak sumber masalahnya.
+3. Pencatatan bon utang yang mudah rusak atau hilang: Pembelian tempo (bon utang) sudah menjadi kebiasaan transaksi warga sekitar dengan toko kelontong. Selama ini catatan utang hanya ditulis pada buku kertas yang mudah basah, sobek, atau terselip. Pemilik warung kesulitan memantau sisa utang dan tanggal jatuh tempo, sehingga perputaran modal kulakan sering terganggu.
+4. Pembukuan makanan titipan warga yang tidak teratur: Toko kelontong kerap menerima titipan makanan olahan rumahan dari warga sekitar (seperti kue basah, kerupuk, atau gorengan). Jumlah titipan masuk, barang laku, sisa retur, dan bagi hasil hanya dicatat pada secarik kertas lepas yang rawan hilang atau salah hitung.
 
-Aplikasi kasir komersial di pasaran belum cocok untuk warung kelontong karena mematok biaya sewa bulanan (*SaaS*) yang menggerus margin tipis pedagang, menyajikan menu rumit bagi orang tua, serta tidak memiliki mekanisme tutup kasir buta. **Grossmart** dikembangkan sebagai sistem kasir mandiri (*self-hosted*) yang memadukan pencatatan transaksi serentak yang aman (ACID) bebas biaya sewa, perlindungan kas laci lewat tutup kasir buta, dan antarmuka ramah lansia.
+Aplikasi kasir komersial di pasaran belum sesuai untuk warung kelontong karena mengenakan biaya sewa bulanan yang memberatkan margin usaha, menyajikan menu rumit bagi orang tua, serta tidak memiliki mekanisme tutup kasir buta. **Grossmart** dikembangkan sebagai sistem kasir mandiri (*self-hosted*) tanpa biaya sewa berkala, yang memadukan transaksi aman berprinsip ACID, perlindungan uang kas lewat tutup kasir buta, dan antarmuka ramah pengguna lanjut usia.
+
 ### Rumusan Masalah
 1. Bagaimana merancang sistem kasir terpadu yang memadukan transaksi cepat, pencatatan bon utang langganan, dan penataan data makanan titipan warga dalam satu basis data relasional yang konsisten?
-2. Bagaimana menerapkan kontrol kasir melalui tutup kasir buta (*blind cash-up*) dan catatan riwayat (*audit log*) guna meniadakan selisih uang laci serta mencegah salah hitung maupun manipulasi data?
-3. Bagaimana membangun tampilan antarmuka ramah lansia berstandar *WCAG 2.1 AAA* dengan tombol sentuh lebar, tulisan kontras tinggi, dan isyarat suara yang mudah dipakai kasir lanjut usia?
+2. Bagaimana menerapkan kontrol kasir melalui tutup kasir buta (*blind cash-up*) dan catatan aktivitas (*audit log*) guna meniadakan selisih uang laci serta mencegah salah hitung maupun manipulasi data?
+3. Bagaimana membangun tampilan antarmuka ramah lansia berstandar *WCAG 2.1 AAA* dengan tombol sentuh lebar, tulisan kontras tinggi, dan isyarat suara yang mudah digunakan kasir lanjut usia?
 
 ### Batasan Masalah
-1. **Lingkup Entitas:** Difokuskan pada operasional satu toko fisik mandiri dengan sistem akun lokal (pemilik dan kasir); tidak mencakup jaringan multi-cabang atau waralaba korporat.
-2. **Infrastruktur Jaringan:** Beroperasi pada arsitektur web mandiri via jaringan lokal toko (Wi-Fi/LAN) atau peladen privat; verifikasi transaksi diproses terpusat di peladen.
-3. **Penyimpanan Transaksi:** *Service Worker* PWA difungsikan untuk pemuatan cepat aset statis; setiap pembayaran kasir diverifikasi peladen guna menjamin integritas stok dan kas laci.
+1. Lingkup operasional: Difokuskan pada operasional satu toko fisik mandiri dengan sistem akun lokal (pemilik dan kasir), tanpa mencakup sistem multi-cabang atau waralaba korporat.
+2. Infrastruktur jaringan: Berjalan pada jaringan lokal toko (Wi-Fi/LAN) atau peladen privat mandiri, dengan verifikasi transaksi diproses terpusat di peladen.
+3. Penanganan transaksi: *Service Worker* PWA difungsikan untuk pemuatan cepat aset statis antarmuka, sedangkan setiap pembayaran kasir diverifikasi langsung oleh peladen guna menjamin integritas stok dan kas laci.
 
 
 
 ## Tujuan dan Manfaat Aplikasi
 
 ### Tujuan Aplikasi
-Tujuan rekayasa perangkat lunak Grossmart adalah:
-1. **Membangun Sistem Kasir Operasional Mandiri:** Mengembangkan aplikasi web berbasis *Laravel 11*, *React 18*, *Inertia.js*, dan *MySQL InnoDB* yang memadukan transaksi kasir cepat, pengelolaan stok, pembukuan bon utang langganan, serta fondasi data barang titipan warga tanpa biaya sewa bulanan.
-2. **Menghadirkan Perlindungan Uang Laci lewat Tutup Kasir Buta (*Blind Cash-Up*):** Menerapkan mekanisme tutup kasir di mana saldo akhir sistem disembunyikan dari layar kasir, mewajibkan kasir menghitung fisik uang tunai lembar per lembar pada kalkulator pecahan Rupiah demi menjaga keteraturan dan kejujuran laci kasir.
-3. **Menerapkan Standar Kemudahan bagi Kasir Lansia (*WCAG 2.1 AAA*):** Merancang antarmuka ergonomis dengan tombol sentuh minimal 56–64px, huruf dan angka kontras tinggi hingga 44px, tombol cepat lembaran Rupiah, serta isyarat suara penanda aksi bagi kasir berusia 50 tahun ke atas.
-4. **Memvalidasi Keandalan Sistem dan Kepuasan Pengguna:** Menguji keandalan pencatatan transaksi serentak lewat uji kode otomatis *PHPUnit*, serta mengukur kemudahan penggunaan langsung di warung mitra hingga mencapai target skor *System Usability Scale* (SUS) > 75.
+Tujuan perancangan dan implementasi Grossmart adalah:
+1. Mengembangkan aplikasi kasir operasional mandiri berbasis *Laravel 11*, *React 18*, *Inertia.js*, dan *MySQL InnoDB* yang memadukan transaksi kasir cepat, pengelolaan persediaan, pencatatan bon utang langganan, serta fondasi data barang titipan warga tanpa biaya sewa bulanan.
+2. Menerapkan perlindungan uang laci melalui alur tutup kasir buta (*blind cash-up*), di mana kasir menghitung fisik lembaran uang tunai menggunakan kalkulator pecahan Rupiah tanpa melihat saldo akhir sistem di layar.
+3. Merancang antarmuka ramah lansia berstandar *WCAG 2.1 AAA* dengan tombol sentuh minimal 56–64px, huruf dan angka kontras tinggi hingga 44px, tombol cepat lembaran Rupiah, serta isyarat suara penanda aksi bagi kasir berusia 50 tahun ke atas.
+4. Menguji keandalan pencatatan transaksi serentak melalui pengujian otomatis *PHPUnit*, serta mengukur kemudahan operasional langsung di warung mitra hingga mencapai target skor *System Usability Scale* (SUS) > 75.
 
 ### Manfaat Aplikasi
-1. **Bagi Pemilik Warung Kelontong:** Memangkas waktu rekap malam dari 60 menit menjadi <15 menit; mencegah selisih uang laci tanpa jejak; memantau stok menipis dan peringatan barang habis; serta mengamankan perputaran modal usaha lewat catatan bon utang yang tertib.
-2. **Bagi Kasir Berusia Lanjut:** Mengurangi ketegangan mata dan rasa panik saat melayani pembeli di jam ramai; mencegah salah hitung kembalian lewat tombol uang pas dan pecahan Rupiah; serta melindungi nama baik kasir dari kecurigaan selisih laci.
-3. **Bagi Warga Penitip Dagangan:** Memberikan kepastian hitungan barang titipan yang laku dan pembagian hasil penjualan yang rapi serta tepat waktu.
-4. **Bagi Kemandirian Digital Usaha Mikro:** Menjadi model penerapan teknologi tepat guna bagi warung kelontong mandiri berbasis perangkat lunak terbuka dan kendali penuh atas data transaksi toko sendiri.
-
+1. Bagi Pemilik Warung Kelontong: Memangkas durasi rekap malam dari 60 menit menjadi <15 menit, mencegah selisih uang laci yang tidak terlacak, memantau persediaan menipis, serta mengamankan perputaran modal usaha lewat catatan bon utang yang tertib.
+2. Bagi Kasir Berusia Lanjut: Mengurangi ketegangan mata dan rasa panik saat melayani pembeli di jam ramai, mencegah salah hitung kembalian lewat tombol uang pas dan pecahan Rupiah, serta memberikan rasa tenang karena perhitungan kas laci terverifikasi transparan.
+3. Bagi Warga Penitip Dagangan: Memberikan catatan yang pasti mengenai barang titipan yang laku dan pembagian hasil penjualan yang rapi serta tepat waktu.
+4. Bagi Kemandirian Usaha Mikro: Memberikan alternatif solusi digital mandiri berbasis perangkat lunak terbuka tanpa ketergantungan biaya langganan bulanan.
 
 
 ## Tinjauan Singkat dan Posisi Kebaruan
 
-Aplikasi mesin kasir digital (*Point of Sale* / POS) komersial di Indonesia umumnya berorientasi pada kafe, restoran, butik pakaian, atau minimarket waralaba. Karakteristik warung kelontong tradisional—perputaran uang receh, margin tipis sembako, buku bon utang warga, dan kasir lansia—kerap luput dari perancangan sistem komersial.
+Aplikasi mesin kasir digital (*Point of Sale* / POS) komersial di Indonesia umumnya dirancang untuk kafe, restoran, butik pakaian, atau minimarket waralaba. Karakteristik warung kelontong tradisional, seperti perputaran uang receh, margin tipis sembako, kebiasaan bon utang warga, dan pengelola yang berusia lanjut, jarang diakomodasi oleh sistem komersial.
 
-Berikut tinjauan kritis terhadap lima penyedia aplikasi kasir di Indonesia:
-1. **Moka POS (PT Moka Teknologi Indonesia):** Menawarkan fitur analitik bisnis dan multi-cabang berbasis *cloud*. Biaya sewa bulanan (mulai Rp 299.000/bulan) sangat membebani warung. Ketergantungan pada tablet premium (iPad/Android kelas atas) dan tampilan padat menjadikannya tidak ramah bagi pedagang lansia.
-2. **Majoo (PT Majoo Teknologi Indonesia):** Menyediakan paket aplikasi wirausaha lengkap (kasir, absensi, akuntansi). Kendalanya bagi warung adalah banyaknya menu kafe/resto yang tidak dibutuhkan sehingga membingungkan kasir lansia, skema sewa rutin, serta alur tutup kasir terbuka yang tidak mencegah manipulasi laci kasir.
-3. **Kasir Pintar (PT Kasir Pintar Internasional):** Aplikasi kasir ponsel berskema gratis terbatas (*freemium*). Versi gratis membatasi kuota barang (maksimal 1.000 item), padahal variasi sembako warung mencapai 1.500–3.000 item. Layar ponsel sempit dengan tombol rapat menyulitkan jari kasir lansia sehingga rawan salah sentuh tombol (*fat-finger*), serta belum memiliki modul pembukuan jajan titipan warga.
-4. **iReap POS (PT Sterling Tulus Cemerlang):** Solusi kasir ritel berbasis Android. Versi gratis tidak mendukung kasir multi-perangkat tersinkronisasi di satu toko, antarmukanya standar ritel umum tanpa penyesuaian untuk kasir lansia yang mengalami rabun dekat, dan tidak memiliki buku bon utang langganan.
-5. **Pawoon (PT Pawoon Solusi Ritel):** Platform kasir berbasis *cloud* dengan sewa bulanan. Keterbatasannya mencakup keharusan sambungan internet tanpa henti, tidak ada fitur pemecahan kemasan eceran dari dus ke saset (*repack*), dan tiadanya alur tutup kasir buta.
+Berikut tinjauan ringkas terhadap lima penyedia aplikasi kasir di Indonesia:
+1. Moka POS (PT Moka Teknologi Indonesia): Menawarkan fitur analitik bisnis dan pengelolaan multi-cabang berbasis cloud. Biaya sewa bulanan mulai dari Rp 299.000 memberatkan warung berpenghasilan harian. Ketergantungan pada perangkat tablet premium serta tampilan menu yang padat menyulitkan pedagang lanjut usia.
+2. Majoo (PT Majoo Teknologi Indonesia): Menyediakan paket aplikasi wirausaha lengkap (kasir, absensi, akuntansi). Modul kafe dan restoran yang tidak dibutuhkan justru membingungkan kasir warung. Skema sewa rutin dan alur tutup kasir terbuka juga belum mencegah kecocokan saldo kas buatan.
+3. Kasir Pintar (PT Kasir Pintar Internasional): Aplikasi kasir ponsel berskema freemium. Versi gratis membatasi katalog hingga 1.000 item barang, padahal variasi sembako warung mencapai 1.500 hingga 3.000 item. Layar ponsel yang sempit dengan tombol rapat membuat kasir lanjut usia rentan salah tekan (*fat-finger*), serta belum memiliki modul pencatatan barang titipan warga.
+4. iReap POS (PT Sterling Tulus Cemerlang): Solusi kasir ritel berbasis Android. Versi gratis belum mendukung sinkronisasi multi-perangkat di satu toko, antarmuka standar belum disesuaikan untuk pengguna yang mengalami rabun dekat, dan belum memiliki fitur bon utang langganan.
+5. Pawoon (PT Pawoon Solusi Ritel): Platform kasir berbasis cloud dengan sewa bulanan yang memerlukan koneksi internet stabil sepanjang waktu. Aplikasi ini tidak memiliki fitur pemecahan kemasan eceran dari dus ke saset (*repack*) maupun alur tutup kasir buta.
 
 ### Analisis Kesenjangan Solusi
 Terdapat empat kesenjangan utama antara solusi komersial dengan kebutuhan warung tradisional:
-1. **Tiadanya Tutup Kasir Buta:** Aplikasi komersial menampilkan ringkasan uang masuk sebelum kasir menghitung fisik kas, membuka celah kasir menyamakan hitungan laci agar cocok dengan sistem.
-2. **Beban Biaya Sewa Bulanan:** Skema langganan menyedot margin tipis warung. Pedagang membutuhkan solusi mandiri sekali pasang (*self-hosted*) tanpa biaya sewa berkala.
-3. **Aksesibilitas Lansia Terabaikan:** Belum ada aplikasi komersial yang menerapkan standar *WCAG 2.1 AAA* dengan tombol sentuh lebar >56px, teks nominal besar hingga 44px, tombol cepat pecahan Rupiah, dan isyarat suara.
-4. **Absennya Fitur Khas Warung:** Transaksi makanan titipan warga, buku bon utang langganan, dan pemecahan kemasan dus ke eceran belum terfasilitasi secara memadai.
+1. Ketiadaan fitur tutup kasir buta: Aplikasi komersial menampilkan ringkasan uang masuk sebelum kasir menghitung fisik uang, membuka peluang penyesuaian hitungan laci agar cocok dengan angka sistem.
+2. Beban biaya langganan bulanan: Skema sewa berkala menggerus margin tipis warung. Pedagang memerlukan solusi mandiri (*self-hosted*) tanpa beban biaya sewa rutin.
+3. Aksesibilitas bagi pengguna lanjut usia belum diakomodasi: Belum ada aplikasi komersial yang menerapkan standar *WCAG 2.1 AAA*, seperti tombol sentuh lebar >56px, teks nominal hingga 44px, tombol cepat pecahan Rupiah, dan isyarat suara.
+4. Kebutuhan operasional khas warung belum terfasilitasi: Transaksi makanan titipan warga, buku bon utang langganan, dan pemecahan kemasan dus ke eceran belum terintegrasi secara praktis.
 
 Tabel 1 menyajikan perbandingan fitur antara solusi komersial dan Grossmart:
 
@@ -108,23 +108,22 @@ Tabel 1 menyajikan perbandingan fitur antara solusi komersial dan Grossmart:
 
 ### Posisi Kebaruan (Novelty) Grossmart
 Grossmart membawa empat kebaruan utama:
-1. **Desain Ramah Kasir Lanjut Usia:** Mengadopsi tampilan yang nyaman dengan tombol sentuh besar (56–64px), kontras warna tinggi (rasio >7:1), tombol cepat pecahan resmi Rupiah, serta nada denting bel dan penanda audio (*beep*, *chime*, *buzz*) guna menuntun kasir lansia secara percaya diri.
-2. **Perlindungan Kas Laci lewat Tutup Kasir Buta (*Blind Cash-Up*):** Kasir menghitung fisik uang tunai dan memasukkan jumlah lembaran ke kalkulator sistem tanpa melihat total saldo sistem di layar, sehingga pencocokan uang kas berlangsung jujur dan transparan bagi pemilik warung.
-3. **Mengakomodasi Praktik Niaga Asli Warung:** Memfasilitasi fondasi data makanan titipan warga, pencatatan bon utang kasir terhubung pengingat WhatsApp, serta konversi stok dus ke saset eceran secara otomatis.
-4. **Kemandirian Sistem dan Keamanan Data Toko:** Beroperasi sebagai aplikasi web pada perangkat lokal di warung, bebas biaya sewa berkala, dan menjamin kerahasiaan riwayat transaksi pedagang.
-
+1. Desain ramah kasir lanjut usia: Mengadopsi tata letak dengan tombol sentuh berukuran 56–64px, rasio kontras warna di atas 7:1, tombol cepat pecahan resmi Rupiah, serta isyarat audio (*beep*, *chime*, *buzz*) guna memandu kasir lanjut usia bertransaksi secara mudah dan akurat.
+2. Perlindungan uang kas lewat tutup kasir buta (*blind cash-up*): Kasir menghitung fisik uang tunai dan menginput jumlah lembaran ke kalkulator sistem tanpa melihat total saldo sistem di layar, sehingga verifikasi kas laci berlangsung transparan.
+3. Mengakomodasi operasional khas warung: Mendukung pencatatan makanan titipan warga, buku bon utang kasir yang terhubung dengan pengingat WhatsApp, serta konversi stok otomatis dari kemasan dus ke saset eceran.
+4. Kemandirian sistem dan keamanan data toko: Beroperasi sebagai aplikasi web pada perangkat lokal di warung tanpa biaya langganan berkala, sehingga seluruh riwayat transaksi tersimpan mandiri di komputer toko.
 
 ## Deskripsi dan Solusi Digital
 
-Grossmart adalah aplikasi kasir berbasis web yang menggabungkan backend *Laravel 11*, antarmuka reaktif *React 18 TypeScript*, dan jembatan *Inertia.js*. Integrasi *Inertia.js* menghadirkan navigasi halaman tunggal yang gesit tanpa kerumitan pengelolaan API terpisah. Basis data *MySQL/MariaDB InnoDB* menjamin transaksi kasir patuh kaidah *ACID* (*Atomicity, Consistency, Isolation, Durability*).
+Grossmart adalah aplikasi kasir berbasis web yang memadukan backend *Laravel 11*, antarmuka reaktif *React 18 TypeScript*, dan jembatan *Inertia.js*. Pemanfaatan *Inertia.js* menghadirkan navigasi halaman tunggal yang responsif tanpa kerumitan pengelolaan API terpisah. Basis data *MySQL/MariaDB InnoDB* menjamin transaksi kasir patuh kaidah *ACID* (*Atomicity, Consistency, Isolation, Durability*).
 
 ### Arsitektur Sistem dan Pembagian Peran
-Arsitektur Grossmart terbagi menjadi lima komponen terpadu (diagram lengkap pada **Gambar 1 di Lampiran 1**):
-1. **Lapisan Antarmuka Pengguna:** Komponen *React 18* ramah lansia, tata letak multi-perangkat (komputer kasir, tablet, ponsel), pemindai barcode USB/kamera, dan isyarat suara *Web Audio API*.
-2. **Lapisan Akselerasi Cepat (PWA):** *Service Worker* mandiri yang menyimpan aset statis antarmuka di peramban untuk pemuatan seketika tanpa jeda muat ulang.
-3. **Lapisan Logika Bisnis (Backend Laravel 11):** Menangani validasi formulir sisi peladen, pembagian hak akses (*RBAC*), kalkulasi harga pokok penjualan (*HPP*) dan laba kotor berbasis *snapshot* modal transaksi, transaksi serentak ACID, dan catatan riwayat aktivitas (*audit log*).
-4. **Lapisan Basis Data Relasional (MySQL InnoDB):** Menyimpan 31 tabel kebutuhan domain warung (plus 8 tabel framework Laravel) dengan penegakan integritas kunci asing (*foreign keys*) dan penguncian baris (*row locking*).
-5. **Lapisan Pembatasan Hak Akses:** Membatasi wewenang Pemilik (*Owner*) dan Kasir (*Cashier*) via middleware `role:owner` dan method `$user->isOwner()` di model User.
+Arsitektur Grossmart terbagi menjadi lima komponen (diagram lengkap pada **Gambar 1 di Lampiran 1**):
+1. Lapisan antarmuka pengguna: Komponen *React 18* ramah lansia, tata letak multi-perangkat (komputer kasir, tablet, ponsel), pemindai barcode USB/kamera, dan isyarat audio *Web Audio API*.
+2. Lapisan akselerasi PWA: *Service Worker* mandiri yang menyimpan aset statis antarmuka di peramban untuk pemuatan seketika tanpa jeda muat ulang.
+3. Lapisan logika bisnis (Backend Laravel 11): Menangani validasi formulir sisi peladen melalui 21 controller terstruktur (mencakup modul kasir POS, kontrol shift dan laci kas, modul pemilik toko, manajemen profil, serta autentikasi pengguna), pembagian hak akses (*RBAC*), kalkulasi harga pokok penjualan (*HPP*) dan laba kotor berbasis snapshot modal transaksi, transaksi serentak ACID, dan catatan riwayat aktivitas (*audit log*).
+4. Lapisan basis data relasional (MySQL InnoDB): Menyimpan 31 tabel kebutuhan domain warung (plus 8 tabel framework Laravel) dengan penegakan integritas kunci asing (*foreign keys*) dan penguncian baris (*row locking*).
+5. Lapisan pembatasan hak akses: Membatasi wewenang Pemilik (*Owner*) dan Kasir (*Cashier*) via middleware `role:owner` dan method `$user->isOwner()` di model User.
 
 **Tabel 2. Pemetaan Komponen Arsitektur Sistem Grossmart**
 
@@ -132,55 +131,56 @@ Arsitektur Grossmart terbagi menjadi lima komponen terpadu (diagram lengkap pada
 |---|---|---|---|
 | **Antarmuka Klien** | React 18 + TypeScript | Komponen kasir cepat, dialog pembayaran, tombol pecahan | Bergantung pada peramban modern (*Chromium/WebKit*) |
 | **Akselerasi PWA** | *Service Worker* mandiri | Penyimpanan aset statis antarmuka untuk pemuatan instan | Tidak memproses transaksi simpan luring (*online-only verification*) |
-| **Peladen Aplikasi** | Laravel 11 + Inertia.js | Pemrosesan aturan transaksi dan perhitungan kas toko, autentikasi sesi, validasi data | Memerlukan runtime PHP 8.2+ pada peladen lokal/privat |
+| **Peladen Aplikasi** | Laravel 11 + Inertia.js (21 Controller) | Pemrosesan aturan transaksi dan perhitungan kas toko, autentikasi sesi, validasi data | Memerlukan runtime PHP 8.2+ pada peladen lokal/privat |
 | **Basis Data** | MySQL / MariaDB (InnoDB) | Penyimpanan persisten 31 tabel domain (plus 8 tabel framework), transaksi atomik ACID | Memerlukan *foreign key constraints* dan indeks aktif |
 | **Keamanan Peran** | Middleware `role:owner` & User method | Isolasi data modal toko (HPP) dan laporan pemilik dari akses kasir | Pengecekan ditegakkan mutlak di level peladen (*server-side*) |
 
 ### Modul Fungsional Utama
 Grossmart mengintegrasikan enam modul operasional inti:
-1. **Modul Transaksi Kasir POS:** Pemindaian barcode cepat, pencarian nama barang praktis, simpan keranjang sementara (tombol F3 saat pembeli menambah belanjaan), serta dialog pembayaran dengan tombol uang pas dan pecahan lembaran Rupiah.
-2. **Modul Shift dan Tutup Kasir Buta (*Blind Cash-Up*):** Buka shift dengan mencatat modal awal receh di laci, setor kas aman ke pemilik (*cash drop*) saat laci penuh, dan tutup shift di mana kasir menghitung lembar uang fisik tanpa melihat angka sistem.
-3. **Modul Pengelolaan Barang dan Eceran (*Repack*):** Pengelolaan katalog sembako, harga grosir bertingkat, pemecahan kemasan dus ke saset eceran otomatis, serta pencatatan buku barang rusak dan kedaluwarsa.
-4. **Fondasi Data Makanan Titipan Warga (Konsinyasi):** Skema data relasional untuk mencatat warga yang menitip, harga titip, komisi warung, dan bagi hasil penjualan yang disiapkan untuk tahap antarmuka lanjutan.
-5. **Modul Buku Bon Utang Langganan (Piutang):** Pencatatan bon utang langsung di layar kasir, pengingat jatuh tempo via WhatsApp, dengan skema cicilan bertahap yang disiapkan pada basis data.
-6. **Modul Dasbor dan Laporan Pemilik:** Ringkasan omzet harian, laba kotor toko, laporan selisih kas shift, mutasi keluar-masuk stok, serta rekaman audit operasional toko.
+1. Modul Transaksi Kasir POS: Pemindaian barcode cepat, pencarian nama barang praktis, simpan keranjang sementara (tombol F3 saat pembeli menambah belanjaan), serta dialog pembayaran dengan tombol uang pas dan pecahan lembaran Rupiah.
+2. Modul Shift dan Tutup Kasir Buta (*Blind Cash-Up*): Buka shift dengan mencatat modal awal receh di laci, setor kas aman ke pemilik (*cash drop*) saat laci penuh, dan tutup shift di mana kasir menghitung lembar uang fisik tanpa melihat angka sistem.
+3. Modul Pengelolaan Barang dan Eceran (*Repack*): Pengelolaan katalog sembako, harga grosir bertingkat, pemecahan kemasan dus ke saset eceran otomatis, serta pencatatan barang rusak dan kedaluwarsa.
+4. Fondasi Data Makanan Titipan Warga (Konsinyasi): Skema data relasional untuk mencatat warga yang menitip, harga titip, komisi warung, dan bagi hasil penjualan yang disiapkan untuk tahap antarmuka lanjutan.
+5. Modul Buku Bon Utang Langganan (Piutang): Pencatatan bon utang langsung di layar kasir, pengingat jatuh tempo via WhatsApp, dengan skema cicilan bertahap yang disiapkan pada basis data.
+6. Modul Dasbor dan Laporan Pemilik: Ringkasan omzet harian, laba kotor toko, laporan selisih kas shift, mutasi keluar-masuk stok, serta rekaman audit operasional toko.
 
 ### Struktur 32 Model Domain Bisnis
-Sistem mengelola 32 model Eloquent yang memetakan 31 tabel domain bisnis (plus 8 tabel framework Laravel):
-- **Transaksi & Pembayaran:** `Sale`, `SaleItem`, `SalePayment`, `HeldCart`, `Sequence`.
-- **Kasir & Kontrol Shift:** `CashierShift`, `CashDrop`, `AuditLog`, `AppSetting`.
-- **Produk & Stok:** `Product`, `Category`, `ProductPriceTier` (harga grosir), `ProductUnitConversion` (konversi satuan eceran), `ProductBundle` (paket sembako), `StockMutation`, `StockConversion`, `SpoilageLog`.
-- **Kulakan & Pembelian:** `Supplier`, `Purchase`, `PurchaseItem`, `SupplierPayablePayment`, `PurchaseReturn`, `PurchaseReturnItem`.
-- **Pelanggan & Bon Utang:** `Customer`, `CustomerPointMutation`, `CustomerReceivable`, `ReceivablePayment`.
-- **Makanan Titipan Warga:** `Consignor`, `ConsignmentSettlement`, `ConsignmentSettlementItem`.
-- **Biaya & Pengguna:** `Expense`, `User`.
-### Alur Kerja Operasional (User Flow)
-Alur kerja harian dimulai pukul 06.00 WIB saat kasir masuk ke aplikasi (*login*) dan memasukkan modal awal uang receh di laci kasir. Kasir melayani transaksi penjualan atau mencatat bon utang belanjaan pelanggan tetap. Jika uang di laci menumpuk, kasir melakukan setor kas aman ke pemilik (*cash drop*). Pukul 21.00 WIB saat toko bersiap tutup, kasir menghitung lembar dan koin fisik uang laci pada kalkulator pecahan dan menekan tombol tutup shift. Pemilik warung kemudian memeriksa ringkasan omzet harian, memverifikasi selisih kas shift, dan meninjau log aktivitas sistem (**alur lengkap pada Gambar 2 di Lampiran 2**).
+Sistem mengelola 32 model Eloquent yang memetakan 31 tabel kebutuhan domain warung (plus 8 tabel framework Laravel):
+- Transaksi dan pembayaran: `Sale`, `SaleItem`, `SalePayment`, `HeldCart`, `Sequence`.
+- Kasir dan kontrol shift: `CashierShift`, `CashDrop`, `AuditLog`, `AppSetting`.
+- Produk dan stok: `Product`, `Category`, `ProductPriceTier` (harga grosir), `ProductUnitConversion` (konversi satuan eceran), `ProductBundle` (paket sembako), `StockMutation`, `StockConversion`, `SpoilageLog`.
+- Kulakan dan pembelian: `Supplier`, `Purchase`, `PurchaseItem`, `SupplierPayablePayment`, `PurchaseReturn`, `PurchaseReturnItem`.
+- Pelanggan dan bon utang: `Customer`, `CustomerPointMutation`, `CustomerReceivable`, `ReceivablePayment`.
+- Makanan titipan warga: `Consignor`, `ConsignmentSettlement`, `ConsignmentSettlementItem`.
+- Biaya dan pengguna: `Expense`, `User`.
 
+### Alur Kerja Operasional (User Flow)
+Alur operasional harian dimulai pukul 06.00 WIB saat kasir masuk ke aplikasi (*login*) dan memasukkan modal awal uang receh di laci kasir. Kasir melayani transaksi penjualan atau mencatat belanjaan tempo pelanggan tetap. Saat uang di laci mulai menumpuk, kasir melakukan setor kas aman ke pemilik (*cash drop*). Pukul 21.00 WIB saat toko bersiap tutup, kasir menghitung lembaran dan koin fisik uang di laci pada kalkulator pecahan dan menekan tombol tutup shift. Pemilik warung kemudian memeriksa ringkasan omzet harian, memverifikasi laporan selisih kas shift, dan meninjau log aktivitas sistem (**alur lengkap pada Gambar 2 di Lampiran 2**).
 
 
 ## Metodologi dan Rancangan Teknis
 
-Pengembangan Grossmart menerapkan metodologi Rekayasa Perangkat Lunak Berpusat pada Pengguna (*Human-Centered Software Engineering Lifecycle*) dalam enam tahapan terstruktur:
-1. **Analisis Kebutuhan & Pemodelan Domain:** Observasi mendalam pada warung mitra memetakan alur transaksi manual, kendala kas laci, dan praktik bon utang, menghasilkan spesifikasi kebutuhan, kamus data, dan *ERD* 39 tabel.
-2. **Perancangan Antarmuka Ramah Lansia:** Penyusunan wireframe berstandar *WCAG 2.1 AAA* dengan tombol besar, tulisan kontras tinggi, palet warna tegas, dan isyarat audio penanda aksi.
-3. **Pembangunan Kode dan Integrasi Sistem:** Pembangunan backend *Laravel 11*, frontend *React 18 TypeScript*, dan *Inertia.js*. Mengimplementasikan alur kasir cepat, tutup kasir buta, konversi stok eceran, penataan data makanan titipan warga, dan caching PWA *Service Worker* mandiri.
-4. **Pengujian Fungsional Otomatis:** Penulisan uji otomatis *PHPUnit* guna memvalidasi transaksi di peladen: integritas transaksi serentak dan pengurangan stok di peladen melalui penguncian baris (*pessimistic row locking*), penolakan pembatalan nota (*void*) tanpa otorisasi sesi pemilik (RBAC `role:owner`), dan perhitungan selisih kas shift.
-5. **Audit Keamanan Aplikasi dan Penguatan Peladen:** Pengujian terhadap kerentanan web (*OWASP Top 10*): mitigasi SQL injection via *Eloquent ORM*, pembersihan data tampilan anti-XSS via React, validasi token *CSRF*, otorisasi data antar pengguna, pembatasan laju login salah (*rate limiting*), dan isolasi data sensitif modal toko (*cost price*) di peladen agar terlindung dari akses kasir.
-6. **Evaluasi Usability dan Uji Lapangan (Pilot):** Penerapan sistem di toko mitra menguji kemudahan kasir lansia via kuesioner baku *System Usability Scale* (SUS) serta mengukur efisiensi durasi rekap harian.
+Pengembangan Grossmart menerapkan tahapan rekayasa perangkat lunak berorientasi pengguna (*Human-Centered Software Engineering Lifecycle*) dalam enam langkah terstruktur:
+1. Analisis kebutuhan dan pemodelan domain: Observasi langsung di warung mitra untuk memetakan alur transaksi manual, kendala uang laci, dan pencatatan bon utang, menghasilkan spesifikasi kebutuhan, kamus data, dan diagram relasi entitas 39 tabel.
+2. Perancangan antarmuka ramah lansia: Penyusunan wireframe berstandar *WCAG 2.1 AAA* dengan tombol berukuran besar, teks kontras tinggi, susunan warna tegas, dan isyarat audio penanda aksi.
+3. Implementasi kode dan integrasi sistem: Pengembangan backend *Laravel 11*, frontend *React 18 TypeScript*, dan *Inertia.js*. Mengimplementasikan alur kasir cepat, tutup kasir buta, konversi stok eceran, penataan data makanan titipan warga, dan caching PWA melalui *Service Worker* mandiri.
+4. Pengujian fungsional otomatis: Penulisan uji otomatis *PHPUnit* untuk memvalidasi transaksi di sisi peladen: konsistensi transaksi serentak dan pengurangan stok melalui penguncian baris (*pessimistic row locking*), penolakan pembatalan nota (*void*) tanpa otorisasi pemilik (RBAC `role:owner`), dan kalkulasi selisih kas shift.
+5. Audit keamanan aplikasi dan penguatan peladen: Pengujian terhadap kerentanan aplikasi web (*OWASP Top 10*): pencegahan SQL injection melalui *Eloquent ORM*, sanitasi output anti-XSS melalui React, validasi token *CSRF*, otorisasi data antar pengguna, pembatasan laju login (*rate limiting*), dan isolasi data modal toko (*cost price*) di peladen agar terlindung dari akses kasir.
+6. Evaluasi kegunaan dan uji lapangan: Penerapan sistem di toko mitra untuk menguji kemudahan kasir lanjut usia menggunakan kuesioner baku *System Usability Scale* (SUS) serta mengukur efisiensi durasi rekap harian.
+
 ### Integritas Transaksi Atomik (ACID)
-Setiap transaksi penjualan melibatkan pembaruan terpadu pada nota (`sales`), rincian belanja (`sale_items`), pembayaran (`sale_payments`), dan mutasi stok (`stock_mutations`). Logika ini dibungkus dalam transaksi basis data (`DB::transaction`). Jika terjadi gangguan sistem, seluruh operasi dibatalkan otomatis (*rollback*). Penguncian baris (*pessimistic row locking*) diterapkan pada stok barang guna menjamin akurasi kuantitas saat dua kasir melayani transaksi bersamaan.
+Setiap transaksi penjualan mencakup pembaruan serentak pada data nota (`sales`), rincian belanja (`sale_items`), pembayaran (`sale_payments`), dan mutasi persediaan (`stock_mutations`). Alur ini dijalankan dalam transaksi basis data (`DB::transaction`). Jika terjadi gangguan sistem di tengah proses, seluruh perubahan dibatalkan secara otomatis (*rollback*). Penguncian baris (*pessimistic row locking*) diterapkan pada pencatatan stok guna menjaga akurasi kuantitas saat dua kasir melayani pembeli secara bersamaan.
 
 ### Autentikasi dan Otorisasi Berbasis Peran (RBAC)
-Sistem menerapkan pembatasan hak akses langsung dari sisi peladen:
-- **Peran Pemilik (*Owner*):** Akses penuh mengelola katalog sembako, harga modal belanja (HPP), laporan laba kotor, persetujuan pembatalan transaksi (*void*), pengaturan akun toko, dan peninjauan buku riwayat aktivitas (*audit log*).
-- **Peran Kasir (*Cashier*):** Berfokus melayani penjualan, simpan keranjang sementara, buka shift laci, setor kas aman ke pemilik, dan tutup kasir buta. Seluruh halaman dan data modal kulakan dikunci rapat di tingkat peladen sehingga kasir tidak dapat melihat rahasia modal maupun laba toko.
+Sistem membatasi wewenang pengguna langsung dari sisi peladen:
+- Peran Pemilik (*Owner*): Memiliki akses penuh mengelola katalog barang, harga modal kulakan (HPP), laporan laba kotor, persetujuan pembatalan nota (*void*), pengaturan akun toko, dan peninjauan riwayat aktivitas (*audit log*).
+- Peran Kasir (*Cashier*): Berfokus melayani penjualan, simpan keranjang sementara, buka shift laci, setor kas aman ke pemilik, dan tutup kasir buta. Seluruh halaman dan data harga modal toko dikunci di tingkat peladen sehingga kasir tidak dapat melihat informasi modal maupun margin laba.
 
 
 
 ## Analisis Kebutuhan Pengguna
 
-Pengembangan Grossmart menempatkan kebiasaan nyata pedagang sebagai acuan desain. Profil persona berikut dirumuskan berdasarkan observasi di toko mitra:
+Perancangan Grossmart menempatkan rutinitas kerja pedagang sebagai acuan utama. Profil persona pengguna dirumuskan berdasarkan hasil observasi di toko mitra:
 
 **Tabel 3. Profil Persona Pengguna Toko Kelontong Grossmart**
 
@@ -193,14 +193,13 @@ Pengembangan Grossmart menempatkan kebiasaan nyata pedagang sebagai acuan desain
 | **Hambatan (*Pain Points*)** | Selisih kas tak terjelaskan, buku bon utang rusak, aplikasi POS sewa terlalu mahal | Tombol aplikasi kecil bikin salah pencet, takut dituduh curang saat uang laci kurang |
 
 ### Penerapan Standar Aksesibilitas WCAG 2.1 AAA Ramah Lansia
-Guna mengatasi penurunan fungsi visual dan kelenturan jari kasir lansia, antarmuka Grossmart mematuhi standar *WCAG 2.1 AAA* melalui enam prinsip ergonomis:
-1. **Skala Tipografi Ekstra Besar:** Teks barang minimal 16–20px berbobot tebal. Nominal total belanja dan kembalian disajikan sangat besar (32–44px, *font-extrabold*) agar jelas terbaca tanpa kacamata baca.
-2. **Kontras Visual Tinggi (>7:1):** Menggunakan teks hitam (#111827) di atas putih (#FFFFFF), serta nominal belanja Hijau Zamrud (#047857) berkontras 7.5:1 terhadap latar belakang.
-3. **Target Sentuh Lebar (>56px):** Tombol aksi utama (BAYAR, SIMPAN, CARI, HAPUS) dirancang setinggi 56–64px dengan jeda 16px (*gap-4*) guna mencegah salah sentuh tombol di sebelahnya (*fat-finger*).
-4. **Tombol Cepat Pecahan Resmi Rupiah:** Menyediakan tombol instan **UANG PAS** dan tombol lembaran resmi Rupiah: **Rp 10.000**, **Rp 20.000**, **Rp 50.000**, dan **Rp 100.000** agar kasir tidak perlu mengetik nominal dari nol.
-5. **Umpan Balik Nada Audio Penanda Aksi:** Mengintegrasikan isyarat suara fungsional via *Web Audio API*: nada *beep* saat barcode terpindai, denting bel (*chime*) saat transaksi berhasil, dan dengung (*buzz*) bila salah menekan tombol.
-6. **Bahasa Warung Sehari-hari yang Akrab:** Menghindari istilah teknis asing yang membingungkan kasir dengan memakai kata-kata yang lazim di warung: *Batal Belanja*, *Parkir Keranjang*, *Bayar*, dan *Setor Kas ke Pemilik*.
-
+Untuk mengantisipasi penurunan daya lihat dan kelenturan gerak jari kasir lanjut usia, antarmuka Grossmart mematuhi standar *WCAG 2.1 AAA* melalui enam prinsip ergonomis:
+1. Ukuran teks besar: Nama barang menggunakan ukuran minimal 16–20px berbobot tebal. Angka total belanja dan kembalian disajikan sangat besar (32–44px tebal) agar jelas terbaca tanpa kacamata baca.
+2. Kontras visual tinggi (>7:1): Teks utama menggunakan warna hitam (#111827) di atas latar putih (#FFFFFF), dan nominal belanja menggunakan warna hijau zamrud (#047857) dengan rasio kontras 7.5:1 terhadap latar belakang.
+3. Target sentuh lebar (>56px): Tombol aksi utama (BAYAR, SIMPAN, CARI, HAPUS) dirancang dengan tinggi 56–64px dan jarak antartombol 16px untuk mencegah salah sentuh tombol di sebelahnya (*fat-finger*).
+4. Tombol cepat pecahan resmi Rupiah: Menyediakan tombol instan **UANG PAS** dan tombol pecahan resmi lembaran Rupiah: **Rp 10.000**, **Rp 20.000**, **Rp 50.000**, dan **Rp 100.000** agar kasir tidak perlu mengetik nominal dari nol.
+5. Isyarat audio penanda aksi: Memanfaatkan *Web Audio API* untuk memberikan umpan balik suara: nada *beep* saat barcode terbaca, denting lonceng (*chime*) saat transaksi berhasil, dan nada peringatan (*buzz*) bila terjadi salah tekan tombol.
+6. Bahasa warung yang mudah dipahami: Menghindari istilah teknis asing yang membingungkan kasir dengan menggunakan kata-kata yang lazim di warung: *Batal Belanja*, *Parkir Keranjang*, *Bayar*, dan *Setor Kas ke Pemilik*.
 Tabel 4 merangkum pemenuhan standar aksesibilitas WCAG 2.1 AAA pada Grossmart:
 
 **Tabel 4. Kepatuhan Standar Aksesibilitas WCAG 2.1 AAA pada Grossmart**
@@ -216,10 +215,10 @@ Tabel 4 merangkum pemenuhan standar aksesibilitas WCAG 2.1 AAA pada Grossmart:
 
 ## Dampak Kebermanfaatan dan Keberlanjutan
 
-Penerapan Grossmart dirancang memberikan dampak positif pada efisiensi waktu, transparansi finansial, dan keberlanjutan usaha warung kelontong tradisional.
+Penerapan Grossmart ditujukan untuk meningkatkan efisiensi waktu, keteraturan pencatatan keuangan, dan ketahanan usaha warung kelontong tradisional.
 
 ### Indikator Keberhasilan dan Evaluasi Kuantitatif
-Efektivitas operasional Grossmart diukur melalui empat metrik kuantitatif terukur di toko mitra (Tabel 5):
+Efektivitas operasional Grossmart diukur melalui empat metrik kuantitatif di toko mitra (Tabel 5):
 
 **Tabel 5. Sasaran Dampak Operasional dan Target Metrik Pengujian**
 
@@ -229,8 +228,9 @@ Efektivitas operasional Grossmart diukur melalui empat metrik kuantitatif teruku
 | **Akurasi Persediaan Barang** | Sensus fisik berkala (*stock opname*) 30 sampel barang acak | < 75% kecocokan stok | > 95% kesesuaian fisik vs sistem |
 | **Transparansi Selisih Kas** | Frekuensi & nominal selisih kas pada lembar tutup shift | Selisih Rp 15rb–50rb/hari tak terlacak | Selisih mendekati Rp 0 (Toleransi wajar) |
 | **Kecepatan Layanan Kasir** | Pengukuran waktu transaksi rata-rata 5 barang belanjaan | 90 – 120 detik per transaksi | < 45 detik per transaksi |
+
 ### Evaluasi Usability Pengguna Lansia (System Usability Scale)
-Kemudahan penggunaan kasir lansia diuji dengan kuesioner baku *System Usability Scale (SUS)* yang diadaptasi ke dalam 10 pernyataan bahasa Indonesia komunikatif skala Likert 1–5, sebagaimana dirangkum pada Tabel 6:
+Kemudahan penggunaan bagi kasir lanjut usia dievaluasi menggunakan kuesioner baku *System Usability Scale (SUS)* yang diadaptasi ke dalam 10 butir pernyataan komunikatif bahasa Indonesia berskala Likert 1–5, sebagaimana dirangkum pada Tabel 6:
 
 **Tabel 6. Instrumen Evaluasi Usability Kasir Lansia (System Usability Scale / SUS)**
 
@@ -250,7 +250,7 @@ Kemudahan penggunaan kasir lansia diuji dengan kuesioner baku *System Usability 
 Target evaluasi menetapkan skor rata-rata SUS minimal mencapai **> 75 (Kategori Good / Grade B)** hingga **> 80 (Kategori Excellent / Grade A)**.
 
 ### Analisis Risiko Operasional dan Strategi Mitigasi
-Penerapan sistem digital pada warung tradisional diantisipasi melalui mitigasi risiko terencana (Tabel 7):
+Penerapan sistem pada warung tradisional diantisipasi melalui mitigasi risiko terencana (Tabel 7):
 
 **Tabel 7. Matriks Risiko Operasional dan Tindakan Mitigasi**
 | Kategori Risiko | Potensi Dampak | Strategi Mitigasi Terencana pada Grossmart |
@@ -261,31 +261,31 @@ Penerapan sistem digital pada warung tradisional diantisipasi melalui mitigasi r
 | **Celah Selisih Uang Laci** | Potensi manipulasi kasir saat pergantian jam kerja | Alur tutup kasir buta mewajibkan hitung fisik tanpa melihat saldo sistem |
 
 ### Rencana Keberlanjutan (Roadmap)
-1. **Fase 1 — Uji Lab & Kesiapan Berkas Aplikasi (Build) (Bulan 1):** Tuntasnya pengujian otomatis *PHPUnit*, validasi kepatuhan *WCAG 2.1 AAA*, dan verifikasi 32 model data.
-2. **Fase 2 — Pilot di Toko Mitra (Bulan 2–3):** Pemasangan aplikasi pada peladen lokal gerai mitra RPTRA Jatinegara, pendampingan kasir lansia, dan pencatatan metrik rekap harian.
-3. **Fase 3 — Evaluasi & Rilis Terbuka (Bulan 4):** Pengukuran skor SUS, evaluasi selisih kas, dan penyusunan paket instalasi mandiri terbuka (*open-source bundle*).
+1. Fase 1 (Bulan 1) - Pengujian Lab dan Kesiapan Sistem: Menuntaskan pengujian otomatis *PHPUnit*, memvalidasi kepatuhan antarmuka *WCAG 2.1 AAA*, dan memverifikasi konsistensi 32 model data.
+2. Fase 2 (Bulan 2–3) - Uji Coba di Toko Mitra: Memasang aplikasi pada komputer lokal di gerai mitra RPTRA Jatinegara, mendampingi kasir lanjut usia, dan mencatat evaluasi durasi rekap harian.
+3. Fase 3 (Bulan 4) - Evaluasi dan Paket Instalasi Mandiri: Mengukur capaian skor SUS, mengevaluasi selisih kas, serta menyusun paket instalasi mandiri terbuka (*open-source bundle*).
 
 
 ## Aspek Etika, Legalitas dan Potensi HKI
 
-Pengembangan Grossmart berpegang pada etika rekayasa perangkat lunak, kepatuhan regulasi data, dan pelindungan karya cipta:
-1. **Etika Desain dan Inklusivitas Usia:** Rancangan ramah lansia ditujukan membantu pengelola warung sepuh agar tetap percaya diri dan mandiri menjalankan usaha keluarganya. Alur tutup kasir buta dan catatan riwayat (*audit log*) ditempatkan sebagai sarana keterbukaan bersama yang saling menjaga ketenangan pemilik toko maupun petugas kasir.
-2. **Kepatuhan Undang-Undang Pelindungan Data Pribadi (UU No. 27/2022):**
-   - **Prinsip Pembatasan Data:** Sistem hanya mencatat nama dan nomor kontak pelanggan tetap yang memiliki catatan bon utang belanja. Transaksi tunai pembeli harian tidak merekam data pribadi apa pun.
-   - **Penyimpanan Mandiri di Toko:** Seluruh basis data penjualan, catatan utang, dan riwayat kas tersimpan di komputer warung sendiri, tidak diserahkan ke pihak ketiga.
-   - **Pengamanan Kata Sandi:** Kata sandi akun dilindungi enkripsi satu arah (*bcrypt*), dan sesi login diamankan dengan token khusus.
-3. **Legalitas Perangkat Lunak Terbuka:** Seluruh komponen utama memanfaatkan teknologi sumber terbuka berlisensi resmi (*Laravel* dan *React* di bawah lisensi MIT; *MySQL/MariaDB* di bawah lisensi GPL), bebas dari sengketa hak cipta komersial.
-4. **Potensi Hak Kekayaan Intelektual (HKI):**
-   - **Hak Cipta Program Komputer:** Kode sumber aplikasi, tata letak antarmuka ramah lansia, dan buku panduan sistem berpotensi didaftarkan Hak Ciptanya ke Direktorat Jenderal Kekayaan Intelektual (DJKI) Kemenkumham RI pada jenis ciptaan Program Komputer.
-   - **Merek Dagang:** Nama dan logo "Grossmart" berpotensi didaftarkan hak mereknya untuk kategori layanan perangkat lunak ritel mandiri.
+Pengembangan Grossmart memperhatikan etika rekayasa perangkat lunak, regulasi pelindungan data, dan hak kekayaan intelektual:
+1. Etika desain dan inklusivitas: Antarmuka ramah lansia dirancang agar pengelola warung sepuh tetap percaya diri menjalankan usahanya. Alur tutup kasir buta dan catatan aktivitas (*audit log*) berfungsi sebagai sarana transparansi kerja yang menjaga keterbukaan antara pemilik dan kasir.
+2. Kepatuhan Pelindungan Data Pribadi (UU No. 27/2022):
+   - Pembatasan data: Sistem hanya mencatat nama dan nomor telepon pelanggan yang memiliki catatan bon utang. Pembeli tunai harian tidak dimintai data pribadi apa pun.
+   - Penyimpanan lokal di toko: Seluruh basis data transaksi, catatan utang, dan mutasi kas tersimpan di komputer toko sendiri dan tidak dialirkan ke pihak luar.
+   - Pengamanan akun: Kata sandi pengguna diamankan dengan enkripsi *bcrypt*, dan sesi login dilindungi token otentikasi.
+3. Legalitas perangkat lunak terbuka: Seluruh komponen utama memanfaatkan teknologi sumber terbuka berlisensi resmi (*Laravel* dan *React* di bawah lisensi MIT; *MySQL/MariaDB* di bawah lisensi GPL), bebas dari sengketa lisensi komersial.
+4. Potensi Hak Kekayaan Intelektual (HKI):
+   - Hak Cipta Program Komputer: Kode sumber aplikasi, tata letak antarmuka ramah lansia, dan buku panduan sistem berpotensi didaftarkan hak ciptanya ke DJKI Kemenkumham RI pada jenis ciptaan Program Komputer.
+   - Merek Dagang: Nama dan logo Grossmart berpotensi didaftarkan sebagai merek dagang untuk aplikasi kasir ritel mandiri.
 
 
 
 ## Penutup
 
-Grossmart lahir dari kenyataan sehari-hari warung kelontong tradisional yang selama ini terpinggirkan oleh digitalisasi yang serba rumit dan berbayar mahal. Dengan menggabungkan aplikasi mandiri tanpa biaya sewa, perlindungan laci kasir lewat tutup kasir buta (*blind cash-up*), serta tampilan ramah lansia (*WCAG 2.1 AAA*), Grossmart membuktikan bahwa digitalisasi toko dapat hadir secara sederhana, membumi, dan benar-benar membantu pedagang kecil.
+Grossmart dirancang untuk menjawab persoalan operasional toko kelontong mandiri yang dikelola oleh pedagang lanjut usia. Melalui arsitektur lokal tanpa biaya sewa bulanan, antarmuka ergonomis berstandar *WCAG 2.1 AAA*, dan mekanisme tutup kasir buta (*blind cash-up*), sistem ini membantu warung mengelola transaksi harian secara tertib tanpa membebani kasir sepuh.
 
-Melalui pencatatan kasir yang cepat, penataan data makanan titipan warga, pencatatan bon utang langganan, dan pemecahan kemasan eceran, Grossmart menjaga kelangsungan hidup warung kelontong di tengah persaingan minimarket modern. Uji coba sistem secara menyeluruh di laboratorium dan pendampingan langsung di warung mitra memastikan bahwa Grossmart bukan sekadar rancangan di atas kertas, melainkan teknologi yang siap dipakai, beretika, dan berkelanjutan.
+Dukungan fitur khas warung, seperti pencatatan bon utang pelanggan, penataan data barang titipan warga, dan konversi kemasan eceran, menjadikan Grossmart relevan dengan praktik niaga di kawasan permukiman. Pengujian otomatis di laboratorium dan pendampingan bertahap di warung mitra memastikan sistem ini dapat diandalkan secara teknis serta mudah dioperasikan dalam kegiatan harian toko.
 ## Daftar Pustaka dan Lampiran
 
 ### Daftar Pustaka
@@ -351,16 +351,16 @@ Seluruh diagram dan tangkapan layar ditempatkan terpusat pada bagian Lampiran in
 **Lampiran 7 — Gambar 7. Pengelolaan Katalog Produk dan Konversi Eceran.** Harga grosir, konversi stok dus ke eceran, dan informasi produk.
 
 #### Skenario Pengujian Verifikatif Kasir (Skenario A s/d J)
-- **Skenario A (Buka Shift Kasir):** Kasir memasukkan modal awal receh di laci; sistem mencatat sesi shift baru dan mengunci modal awal tersebut.
-- **Skenario B (Barcode Belum Terdaftar):** Muncul pemberitahuan jelas disertai tombol cari manual lewat nama barang; penambahan barang baru dibatasi hak aksesnya.
-- **Skenario C (Uang Pembeli Kurang):** Kasir dapat membatalkan barang, memarkir belanjaan sementara (F3), atau mencatatnya ke bon utang langganan tetap.
-- **Skenario D (Gangguan Jaringan Lokal):** Sistem menampilkan peringatan sambungan tanpa mengeluarkan bukti bayar palsu; alur nota cadangan darurat aktif.
-- **Skenario E (Batal Belanja / Void):** Pembatalan sebelum bayar langsung diproses kasir; pembatalan nota belanja yang sudah selesai (*void*) wajib meminta persetujuan pemilik toko.
-- **Skenario F (Kulakan Barang Masuk):** Alur penerimaan kulakan disiapkan dalam fondasi skema pembelian (`purchases`) untuk pencatatan utang dagang dan pembaruan harga modal barang.
-- **Skenario G (Barang Rusak dan Basi):** Pencatatan barang kadaluwarsa memotong stok secara otomatis dan membukukan kerugian modal toko.
-- **Skenario H (Pergantian Shift Kasir):** Pergantian kasir siang hari mewajibkan tutup shift pertama sebelum kasir berikutnya membuka shift baru.
-- **Skenario I (Retur Belanjaan Pembeli):** Pengecekan nomor struk resmi mengembalikan barang ke stok dan mencatat pengembalian uang dari laci.
-- **Skenario J (Tutup Shift dengan Selisih Kas):** Kasir menghitung fisik uang tanpa melihat saldo sistem di layar; laporan selisih uang langsung dikirim ke layar pemilik.
+- **Skenario A (Buka Shift Kasir):** Kasir memasukkan modal awal uang receh di laci; sistem mencatat sesi shift baru dan mengunci nilai modal awal.
+- **Skenario B (Barcode Belum Terdaftar):** Menampilkan notifikasi visual disertai tombol pencarian manual berdasarkan nama barang; penambahan barang baru dibatasi hak akses pemilik.
+- **Skenario C (Uang Pembeli Kurang):** Kasir dapat membatalkan item belanja, memarkir keranjang sementara (F3), atau mengalihkan transaksi ke bon utang pelanggan tetap.
+- **Skenario D (Gangguan Jaringan Lokal):** Sistem menampilkan peringatan sambungan tanpa mencetak struk keliru; kasir beralih ke alur nota cadangan darurat.
+- **Skenario E (Batal Belanja / Void):** Pembatalan keranjang sebelum bayar dapat diproses langsung oleh kasir; pembatalan nota belanja yang sudah selesai (*void*) wajib diverifikasi oleh pemilik toko.
+- **Skenario F (Kulakan Barang Masuk):** Penerimaan pasokan barang tercatat pada skema pembelian (`purchases`) untuk pencatatan utang dagang dan pembaruan harga modal barang.
+- **Skenario G (Barang Rusak dan Kedaluwarsa):** Pencatatan barang kedaluwarsa memotong stok secara otomatis dan membukukan penyesuaian kerugian modal toko.
+- **Skenario H (Pergantian Shift Kasir):** Pergantian kasir mewajibkan tutup shift pertama sebelum kasir pengganti membuka shift baru.
+- **Skenario I (Retur Belanjaan Pembeli):** Verifikasi nomor struk resmi mengembalikan kuantitas barang ke persediaan dan mencatat pengeluaran kas retur dari laci.
+- **Skenario J (Tutup Shift dengan Selisih Kas):** Kasir menghitung fisik uang tunai tanpa melihat saldo sistem di layar; laporan selisih uang langsung dicatat untuk ditinjau oleh pemilik.
 #### Lembar Evaluasi Lapangan dan Pembagian Tugas Tim
 - **Lampiran E — Lembar Uji Fungsi Kasir:** Matriks pengujian fungsional modul (ID Skenario, Langkah Kerja, Hasil Diharapkan, Status).
 - **Lampiran F — Lembar Kuesioner Usability SUS:** 10 butir pernyataan skala Likert 1–5 bahasa Indonesia untuk menguji kasir lansia.

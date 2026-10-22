@@ -43,7 +43,7 @@ class Product extends Model
 
     public function getSkuAttribute(): string
     {
-        return $this->barcode ?? ('PRD-' . $this->id);
+        return $this->barcode ?? ('PRD-'.$this->id);
     }
 
     public function category()

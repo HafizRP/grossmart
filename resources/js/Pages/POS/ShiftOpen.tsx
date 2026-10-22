@@ -7,10 +7,16 @@ import { sound } from '@/Utils/sound';
 import { ToastProvider } from '@/Components/UI/Toast';
 
 export interface ShiftOpenProps {
-  cashierName: string;
+  cashier?: {
+    id: number;
+    name: string;
+    username: string;
+  };
+  cashierName?: string;
 }
 
-export const ShiftOpen: React.FC<ShiftOpenProps> = ({ cashierName }) => {
+export const ShiftOpen: React.FC<ShiftOpenProps> = ({ cashier, cashierName }) => {
+  const displayName = cashier?.name || cashierName || 'Kasir';
   const [startingCash, setStartingCash] = useState<number>(100000);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState<boolean>(false);
   const [denominationCounts, setDenominationCounts] = useState<DenominationCounts>({});
@@ -29,7 +35,7 @@ export const ShiftOpen: React.FC<ShiftOpenProps> = ({ cashierName }) => {
     sound.playChime();
     setIsSubmitting(true);
 
-    router.post('/shifts/open', {
+    router.post('/pos/shifts/open', {
       starting_cash: startingCash,
       denomination_details: Object.keys(denominationCounts).length > 0 ? denominationCounts : null,
       notes: notes.trim() || null,
@@ -59,7 +65,7 @@ export const ShiftOpen: React.FC<ShiftOpenProps> = ({ cashierName }) => {
               Buka Shift Kasir Baru
             </h2>
             <p className="text-sm sm:text-base font-bold text-slate-600">
-              Selamat bertugas, <strong className="text-slate-900">{cashierName}</strong>! Silakan hitung dan masukkan uang modal receh awal di laci kasir.
+              Selamat bertugas, <strong className="text-slate-900">{displayName}</strong>! Silakan hitung dan masukkan uang modal receh awal di laci kasir.
             </p>
           </div>
 

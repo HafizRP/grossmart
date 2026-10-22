@@ -16,6 +16,7 @@ use App\Models\SaleItem;
 use App\Models\SalePayment;
 use App\Models\Sequence;
 use App\Models\StockMutation;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -68,6 +69,7 @@ class PosController extends Controller
             'categories' => $categories,
             'customers' => $customers,
             'settings' => $settings,
+            'owners' => User::where('role', 'owner')->where('is_active', true)->get(['id', 'name']),
         ]);
     }
 
@@ -122,7 +124,7 @@ class PosController extends Controller
                     $bundleItems = $product->bundleComponents()->with('itemProduct')->get();
                     foreach ($bundleItems as $bItem) {
                         $comp = Product::where('id', $bItem->item_product_id)->lockForUpdate()->firstOrFail();
-                        $neededQty = $qty * (float)$bItem->quantity;
+                        $neededQty = $qty * (float) $bItem->quantity;
 
                         if ($comp->current_stock < $neededQty) {
                             throw new \Exception("Stok komponen bundle ({$comp->name}) tidak mencukupi. Sisa: {$comp->current_stock}");
@@ -189,7 +191,7 @@ class PosController extends Controller
 
             if ($pointsRedeemed > 0 && $customer) {
                 if ($customer->loyalty_points < $pointsRedeemed) {
-                    throw new \Exception("Poin pelanggan tidak mencukupi untuk ditukarkan.");
+                    throw new \Exception('Poin pelanggan tidak mencukupi untuk ditukarkan.');
                 }
             }
 
@@ -261,7 +263,7 @@ class PosController extends Controller
             // Jika ada tempo, catat piutang pelanggan
             if ($tempoPortion > 0) {
                 if (! $customer) {
-                    throw new \Exception("Pembayaran tempo (bon) wajib memilih data pelanggan.");
+                    throw new \Exception('Pembayaran tempo (bon) wajib memilih data pelanggan.');
                 }
 
                 CustomerReceivable::create([

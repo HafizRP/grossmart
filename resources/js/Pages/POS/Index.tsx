@@ -19,6 +19,7 @@ export interface PosIndexProps {
   products: Product[];
   categories: Category[];
   customers: Customer[];
+  owners?: Array<{ id: number; name: string }>;
   shift: {
     id: number;
     cashier_name: string;
@@ -36,6 +37,7 @@ export const PosIndex: React.FC<PosIndexProps> = ({
   products = [],
   categories = [],
   customers = [],
+  owners = [],
   shift,
   store,
 }) => {
@@ -60,7 +62,7 @@ export const PosIndex: React.FC<PosIndexProps> = ({
   // State Cash Drop Form
   const [cashDropAmount, setCashDropAmount] = useState<number>(0);
   const [cashDropNotes, setCashDropNotes] = useState<string>('');
-
+  const [cashDropReceivedBy, setCashDropReceivedBy] = useState<number>(owners[0]?.id || 1);
   // 1. Tambah Produk ke Keranjang (Dengan Kalkulasi Otomatis Harga Grosir)
   const handleAddToCart = useCallback((product: Product) => {
     setCartItems((prevItems) => {
@@ -291,15 +293,59 @@ export const PosIndex: React.FC<PosIndexProps> = ({
     const subtotal = cartItems.reduce((sum, it) => sum + it.subtotal, 0);
     const grandTotal = subtotal + payment.rounding_amount - (payment.points_discount_value || 0);
 
+    const payments: Array<{
+      payment_method: 'CASH' | 'TRANSFER' | 'TEMPO';
+      amount: number;
+      payment_reference?: string;
+    }> = [];
+
+    if (payment.payment_method === 'CASH') {
+      payments.push({
+        payment_method: 'CASH',
+        amount: grandTotal,
+      });
+    } else if (payment.payment_method === 'TRANSFER') {
+      payments.push({
+        payment_method: 'TRANSFER',
+        amount: grandTotal,
+        payment_reference: payment.transfer_reference_number,
+      });
+    } else if (payment.payment_method === 'RECEIVABLE') {
+      payments.push({
+        payment_method: 'TEMPO',
+        amount: grandTotal,
+      });
+    } else if (payment.payment_method === 'SPLIT') {
+      if (payment.cash_amount > 0) {
+        payments.push({ payment_method: 'CASH', amount: payment.cash_amount });
+      }
+      if (payment.transfer_amount > 0) {
+        payments.push({
+          payment_method: 'TRANSFER',
+          amount: payment.transfer_amount,
+          payment_reference: payment.transfer_reference_number,
+        });
+      }
+      if (payment.receivable_amount > 0) {
+        payments.push({ payment_method: 'TEMPO', amount: payment.receivable_amount });
+      }
+    }
+
     const payload = {
       items: cartItems.map((it) => ({
         product_id: it.product_id,
         quantity: it.quantity,
-        unit_price: it.unit_price,
-        discount_amount: it.discount_amount,
-        subtotal: it.subtotal,
+        unit_name: it.unit,
+        selling_price: it.unit_price,
+        discount: it.discount_amount,
       })),
-      ...payment,
+      customer_id: payment.customer_id || null,
+      discount: cartItems.reduce((s, it) => s + (it.discount_amount * it.quantity), 0),
+      points_redeemed: payment.points_redeemed || 0,
+      rounding_amount: payment.rounding_amount || 0,
+      payments,
+      cash_received: payment.cash_given || undefined,
+      tempo_due_date: payment.receivable_due_date || undefined,
     };
 
     router.post('/pos/checkout', payload, {
@@ -354,11 +400,15 @@ export const PosIndex: React.FC<PosIndexProps> = ({
   // 9. Setor Kas ke Brankas (Cash Drop)
   const handleCashDropSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (cashDropAmount <= 0) return;
+    if (cashDropAmount < 1000) {
+      toast.warning('Nominal setoran brankas minimal Rp 1.000');
+      return;
+    }
 
     sound.playChime();
-    router.post('/shifts/cash-drop', {
+    router.post('/pos/cash-drops', {
       amount: cashDropAmount,
+      received_by: cashDropReceivedBy || (owners[0]?.id || 1),
       notes: cashDropNotes.trim() || null,
     }, {
       onSuccess: () => {
@@ -367,9 +417,10 @@ export const PosIndex: React.FC<PosIndexProps> = ({
         setCashDropNotes('');
         toast.success(`Setoran brankas ${formatRupiah(cashDropAmount)} berhasil dicatat`);
       },
-      onError: () => {
+      onError: (errors) => {
         sound.playError();
-        toast.error('Gagal mencatat setoran brankas');
+        const errFirst = Object.values(errors)[0];
+        toast.error(typeof errFirst === 'string' ? errFirst : 'Gagal mencatat setoran brankas');
       },
     });
   };
@@ -384,7 +435,7 @@ export const PosIndex: React.FC<PosIndexProps> = ({
       cashierName={shift?.cashier_name}
       shiftStartTime={shift?.start_time}
       onOpenCashDrop={() => setIsCashDropOpen(true)}
-      onCloseShift={() => router.visit(`/shifts/${shift?.id}/close`)}
+      onCloseShift={() => router.visit('/pos/shifts/close')}
     >
       {/* Konten Utama POS Kasir (Full-Bleed Command Center) */}
       <div className="flex-1 min-h-0 flex gap-3 overflow-hidden">
@@ -547,6 +598,26 @@ export const PosIndex: React.FC<PosIndexProps> = ({
               ))}
             </div>
           </div>
+
+          {owners.length > 0 && (
+            <div>
+              <label htmlFor="cash-drop-receiver" className="block text-xs font-black uppercase text-slate-700 tracking-wider mb-1">
+                Diserahkan Kepada (Pemilik Toko):
+              </label>
+              <select
+                id="cash-drop-receiver"
+                value={cashDropReceivedBy}
+                onChange={(e) => setCashDropReceivedBy(parseInt(e.target.value, 10))}
+                className="w-full min-h-[50px] px-3.5 text-base font-bold border-2 border-slate-300 rounded-xl focus:border-emerald-600 bg-white"
+              >
+                {owners.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <label htmlFor="cash-drop-notes-input" className="block text-xs font-black uppercase text-slate-700 tracking-wider mb-1">

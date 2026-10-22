@@ -73,7 +73,7 @@ class CashDropController extends Controller
                 'cashier' => $user->name,
             ]);
 
-            return redirect()->route('pos.index')->with('success', "Uang kas laci Rp " . number_format($request->amount, 0, ',', '.') . " berhasil disetor ke brankas ({$dropNumber}).");
+            return redirect()->route('pos.index')->with('success', 'Uang kas laci Rp '.number_format($request->amount, 0, ',', '.')." berhasil disetor ke brankas ({$dropNumber}).");
         });
     }
 }

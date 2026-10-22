@@ -39,7 +39,7 @@ class AuditLog extends Model
             'user_id' => auth()->id(),
             'action' => $action,
             'entity_type' => $entityType,
-            'entity_id' => $entityId ? (string)$entityId : null,
+            'entity_id' => $entityId ? (string) $entityId : null,
             'old_values' => $old,
             'new_values' => $new,
             'ip_address' => request()->ip(),

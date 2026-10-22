@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Pos;
 use App\Http\Controllers\Controller;
 use App\Models\CashierShift;
 use App\Models\HeldCart;
-use App\Models\Sequence;
 use Illuminate\Http\Request;
 
 class HeldCartController extends Controller
@@ -49,7 +48,7 @@ class HeldCartController extends Controller
             ->firstOrFail();
 
         $holdCount = HeldCart::where('shift_id', $shift->id)->count() + 1;
-        $holdNumber = 'HLD-' . str_pad((string)$holdCount, 2, '0', STR_PAD_LEFT);
+        $holdNumber = 'HLD-'.str_pad((string) $holdCount, 2, '0', STR_PAD_LEFT);
 
         $heldCart = HeldCart::create([
             'hold_number' => $holdNumber,

@@ -3,14 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\AppSetting;
-use App\Models\CashDrop;
 use App\Models\CashierShift;
 use App\Models\Category;
+use App\Models\Consignor;
 use App\Models\Customer;
+use App\Models\CustomerReceivable;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\SalePayment;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -20,7 +22,9 @@ class PosAndOwnerTest extends TestCase
     use RefreshDatabase;
 
     protected User $owner;
+
     protected User $cashier;
+
     protected Product $product;
 
     protected function setUp(): void
@@ -86,10 +90,9 @@ class PosAndOwnerTest extends TestCase
         $response = $this->actingAs($this->cashier)->get('/pos');
         $response->assertOk();
 
-        $response->assertInertia(fn ($page) =>
-            $page->component('POS/Index')
-                ->missing('products.0.cost_price')
-                ->where('products.0.name', 'Minyak Goreng 1L')
+        $response->assertInertia(fn ($page) => $page->component('POS/Index')
+            ->missing('products.0.cost_price')
+            ->where('products.0.name', 'Minyak Goreng 1L')
         );
     }
 
@@ -291,5 +294,108 @@ class PosAndOwnerTest extends TestCase
         $this->assertEquals('Toko Kelontong Berkah Baru', AppSetting::get('store_name'));
         $this->assertEquals('081987654321', AppSetting::get('store_phone'));
         $this->assertEquals('60', AppSetting::get('cashier_idle_timeout_minutes'));
+    }
+
+    public function test_owner_can_manage_receivables_purchases_expenses_consignments(): void
+    {
+        // 1. Uji Buku Bon Utang
+        $customer = Customer::create(['name' => 'Pak RT', 'is_active' => true]);
+        $sale = Sale::create([
+            'invoice_number' => 'TRX-TEMPO-001',
+            'cashier_id' => $this->cashier->id,
+            'customer_id' => $customer->id,
+            'subtotal' => 50000,
+            'grand_total' => 50000,
+            'final_amount' => 50000,
+            'total_cost_price' => 40000,
+            'status' => 'COMPLETED',
+        ]);
+        $receivable = CustomerReceivable::create([
+            'sale_id' => $sale->id,
+            'customer_id' => $customer->id,
+            'total_amount' => 50000,
+            'down_payment' => 10000,
+            'remaining_balance' => 40000,
+            'status' => 'UNPAID',
+        ]);
+
+        $resPay = $this->actingAs($this->owner)->post("/owner/receivables/{$receivable->id}/pay", [
+            'amount' => 20000,
+            'payment_method' => 'CASH',
+        ]);
+        $resPay->assertRedirect();
+        $this->assertEquals(20000, $receivable->fresh()->remaining_balance);
+        $this->assertEquals('PARTIAL', $receivable->fresh()->status);
+
+        // 2. Uji Kulakan Supplier & Stok Rak Bertambah
+        $supplier = Supplier::create(['name' => 'Distributor Berkah', 'is_active' => true]);
+        $initialStock = $this->product->current_stock;
+        $resKul = $this->actingAs($this->owner)->post('/owner/purchases', [
+            'supplier_id' => $supplier->id,
+            'purchase_date' => now()->toDateString(),
+            'paid_amount' => 150000,
+            'items' => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity' => 10,
+                    'cost_price' => 14000,
+                ],
+            ],
+        ]);
+        $resKul->assertRedirect(route('owner.purchases.index'));
+        $this->assertEquals($initialStock + 10, $this->product->fresh()->current_stock);
+        $this->assertEquals(14000, $this->product->fresh()->cost_price);
+
+        // 3. Uji Biaya Operasional Toko
+        $resExp = $this->actingAs($this->owner)->post('/owner/expenses', [
+            'category' => 'Listrik & Air Token',
+            'amount' => 50000,
+            'source' => 'OWNER',
+            'note' => 'Beli token listrik 50rb',
+        ]);
+        $resExp->assertRedirect();
+        $this->assertDatabaseHas('expenses', [
+            'category' => 'Listrik & Air Token',
+            'amount' => 50000,
+        ]);
+
+        // 4. Uji Rekonsiliasi Makanan Titipan
+        $consignor = Consignor::create(['name' => 'Ibu Halimah', 'is_active' => true]);
+        $titipanProd = Product::create([
+            'name' => 'Kue Lemper Ayam',
+            'category_id' => $this->product->category_id,
+            'product_type' => 'CONSIGNMENT',
+            'consignor_id' => $consignor->id,
+            'unit' => 'pcs',
+            'selling_price' => 3000,
+            'cost_price' => 2500,
+            'consignor_split_price' => 2500,
+            'current_stock' => 20,
+            'is_active' => true,
+        ]);
+
+        SaleItem::create([
+            'sale_id' => $sale->id,
+            'product_id' => $titipanProd->id,
+            'product_name_snapshot' => $titipanProd->name,
+            'unit_snapshot' => $titipanProd->unit,
+            'cost_price_snapshot' => 2500,
+            'selling_price_snapshot' => 3000,
+            'quantity' => 5,
+            'subtotal' => 15000,
+        ]);
+
+        $resSet = $this->actingAs($this->owner)->post('/owner/consignments/settlements', [
+            'consignor_id' => $consignor->id,
+            'start_date' => now()->subDay()->toDateString(),
+            'end_date' => now()->addDay()->toDateString(),
+        ]);
+        $resSet->assertRedirect();
+        $this->assertDatabaseHas('consignment_settlements', [
+            'consignor_id' => $consignor->id,
+            'total_sold_quantity' => 5,
+            'total_payable_amount' => 12500,
+            'total_store_profit' => 2500,
+        ]);
     }
 }

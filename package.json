@@ -3,7 +3,10 @@
     "type": "module",
     "scripts": {
         "build": "tsc && vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "sync": "./scripts/sync.sh",
+        "sync:code": "python3 scripts/sync_code_to_proposal.py",
+        "audit": "./scripts/audit_proposal.sh"
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",

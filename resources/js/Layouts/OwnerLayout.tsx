@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ToastProvider } from '@/Components/UI/Toast';
 import { OfflineBanner } from '@/Components/UI/OfflineBanner';
 import { sound } from '@/Utils/sound';
@@ -16,14 +16,25 @@ export const OwnerLayout: React.FC<OwnerLayoutProps> = ({
   children,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const { url } = usePage();
 
   const navLinks = [
     { label: 'Ringkasan Warung', href: '/owner/dashboard', icon: '📊' },
     { label: 'Layar Kasir (POS)', href: '/pos', icon: '🛒' },
     { label: 'Katalog Barang & Stok', href: '/owner/products', icon: '📦' },
+    { label: 'Pecah Satuan (Dus/Pcs)', href: '/owner/conversions', icon: '🔄' },
+    { label: 'Bon Utang Pelanggan', href: '/owner/receivables', icon: '📒' },
+    { label: 'Kulakan & Pasokan', href: '/owner/purchases', icon: '🚚' },
+    { label: 'Biaya Toko', href: '/owner/expenses', icon: '💸' },
+    { label: 'Titipan Makanan', href: '/owner/consignments', icon: '🥟' },
     { label: 'Laporan Laba & Bon', href: '/owner/reports', icon: '📈' },
-    { label: 'Pengaturan Toko', href: '/settings', icon: '⚙️' },
+    { label: 'Pengaturan Toko', href: '/owner/settings', icon: '⚙️' },
   ];
+
+  const isLinkActive = (href: string) => {
+    if (href === '/owner/dashboard') return url === '/owner/dashboard' || url === '/owner';
+    return url === href || url.startsWith(`${href}/`) || url.startsWith(`${href}?`);
+  };
 
   const handleLogout = () => {
     sound.playClick();
@@ -63,7 +74,7 @@ export const OwnerLayout: React.FC<OwnerLayoutProps> = ({
                 Menu Utama Warung:
               </span>
               {navLinks.map((link) => {
-                const isActive = typeof window !== 'undefined' && window.location.pathname === link.href;
+                const isActive = isLinkActive(link.href);
                 return (
                   <Link
                     key={link.href}
@@ -137,17 +148,24 @@ export const OwnerLayout: React.FC<OwnerLayoutProps> = ({
         {/* Mobile Dropdown Drawer */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-slate-900 border-b border-slate-800 p-4 space-y-2 shadow-2xl z-20">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="min-h-[50px] px-4 py-3 rounded-xl text-base font-black text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center gap-3"
-              >
-                <span className="text-xl">{link.icon}</span>
-                <span>{link.label}</span>
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = isLinkActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`min-h-[50px] px-4 py-3 rounded-xl text-base font-black border flex items-center gap-3 transition-all ${
+                    isActive
+                      ? 'bg-emerald-600 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/20'
+                      : 'text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border-slate-700'
+                  }`}
+                >
+                  <span className="text-xl">{link.icon}</span>
+                  <span>{link.label}</span>
+                </Link>
+              );
+            })}
 
             <button
               type="button"

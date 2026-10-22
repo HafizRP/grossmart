@@ -46,8 +46,75 @@ cleanup_on_interrupt() {
 }
 trap cleanup_on_interrupt INT TERM
 
-# Opsi argumen --reset / -f untuk membersihkan sesi lama
-if [ "${1:-}" = "--reset" ] || [ "${1:-}" = "-f" ] || [ "${1:-}" = "--force" ]; then
+AGENT_INPUT="${SYNC_AGENT:-${AGENT_TYPE:-auto}}"
+RESET_FLAG=false
+SYNC_ONLY=false
+
+show_help() {
+  cat << 'EOF'
+Penggunaan:
+  ./scripts/generate_proposal.sh [OPSI]
+  ./scripts/sync.sh [OPSI]
+
+Opsi:
+  -a, --agent <tipe>   Pilih tipe agent untuk sinkronisasi.
+                       Pilihan: auto (default), omp, claude, cursor, aider, gemini, codex, script
+  --sync-only, -s      Hanya sinkronkan markdown (lewati kompilasi DOCX Word).
+  -f, --reset, --force Bersihkan riwayat sesi dan berkas log sebelum mulai.
+  -h, --help           Tampilkan panduan ini.
+
+Variabel Lingkungan:
+  SYNC_AGENT=<tipe>    Menentukan tipe agen (contoh: SYNC_AGENT=claude)
+  AGENT_TYPE=<tipe>    Alternatif variabel lingkungan untuk tipe agen
+
+Contoh Penggunaan:
+  ./scripts/generate_proposal.sh                    # Auto-detect agen yang tersedia (omp/claude/cursor/aider/script)
+  ./scripts/generate_proposal.sh --agent=claude     # Jalankan dengan Claude Code CLI
+  ./scripts/generate_proposal.sh --agent=script     # Sinkronisasi deterministik cepat tanpa AI CLI
+  ./scripts/sync.sh --agent=omp                     # Jalankan via OMP CLI
+EOF
+  exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent=*)
+      AGENT_INPUT="${1#*=}"
+      shift
+      ;;
+    -a|--agent)
+      if [ -n "${2:-}" ] && [[ ! "$2" =~ ^- ]]; then
+        AGENT_INPUT="$2"
+        shift 2
+      else
+        echo "ERROR: Opsi $1 memerlukan nilai tipe agen." >&2
+        exit 1
+      fi
+      ;;
+    --sync-only|-s)
+      SYNC_ONLY=true
+      shift
+      ;;
+    --reset|-f|--force)
+      RESET_FLAG=true
+      shift
+      ;;
+    -h|--help)
+      show_help
+      ;;
+    omp|claude|cursor|cursor-agent|aider|gemini|gemini-cli|codex|openai|script|python|direct|none|auto)
+      AGENT_INPUT="$1"
+      shift
+      ;;
+    *)
+      echo "Peringatan: Argumen tidak dikenali '$1'. Gunakan -h untuk panduan." >&2
+      shift
+      ;;
+  esac
+done
+
+# Opsi pembersihan sesi lama
+if [ "$RESET_FLAG" = true ]; then
   echo "Membersihkan sesi generate lama..."
   rm -f "$SESSION_FILE"
   rm -rf "$SESSION_DIR"
@@ -55,14 +122,111 @@ if [ "${1:-}" = "--reset" ] || [ "${1:-}" = "-f" ] || [ "${1:-}" = "--force" ]; 
   echo "Sesi di-reset."
 fi
 
-echo -e "\n=== [$(date '+%Y-%m-%d %H:%M:%S')] Memulai Pipeline Generate Proposal Grossmart (Sync via OMP & Render DOCX) ===" | tee -a "$LOG_FILE"
+# 2. Resolusi dan Validasi Tipe Agen Sinkronisasi
+RESOLVED_AGENT=""
+AUTO_REASON=""
+case "$AGENT_INPUT" in
+  auto)
+    if [ -n "${AGENT:-}" ] || [ -n "${GIT_INDEX_FILE:-}" ] || [ -n "${CI:-}" ]; then
+      RESOLVED_AGENT="script"
+      AUTO_REASON="sesi runtime agen/hook aktif - sinkronisasi langsung deterministik"
+    elif command -v omp >/dev/null 2>&1; then
+      RESOLVED_AGENT="omp"
+      AUTO_REASON="binary omp ditemukan di PATH"
+    elif command -v claude >/dev/null 2>&1; then
+      RESOLVED_AGENT="claude"
+      AUTO_REASON="binary claude ditemukan di PATH"
+    elif command -v cursor-agent >/dev/null 2>&1; then
+      RESOLVED_AGENT="cursor-agent"
+      AUTO_REASON="binary cursor-agent ditemukan di PATH"
+    elif command -v cursor >/dev/null 2>&1; then
+      RESOLVED_AGENT="cursor"
+      AUTO_REASON="binary cursor ditemukan di PATH"
+    elif command -v aider >/dev/null 2>&1; then
+      RESOLVED_AGENT="aider"
+      AUTO_REASON="binary aider ditemukan di PATH"
+    elif command -v gemini-cli >/dev/null 2>&1; then
+      RESOLVED_AGENT="gemini-cli"
+      AUTO_REASON="binary gemini-cli ditemukan di PATH"
+    elif command -v gemini >/dev/null 2>&1; then
+      RESOLVED_AGENT="gemini"
+      AUTO_REASON="binary gemini ditemukan di PATH"
+    elif command -v codex >/dev/null 2>&1; then
+      RESOLVED_AGENT="codex"
+      AUTO_REASON="binary codex ditemukan di PATH"
+    else
+      RESOLVED_AGENT="script"
+      AUTO_REASON="engine Python deterministik (offline/fallback)"
+    fi
+    ;;
+  omp)
+    if ! command -v omp >/dev/null 2>&1; then
+      echo "ERROR: Agen 'omp' dipilih tetapi binary 'omp' tidak ditemukan di PATH." | tee -a "$LOG_FILE"
+      echo "Saran: Install omp CLI atau gunakan agen lain: --agent=claude / --agent=script / --agent=auto" | tee -a "$LOG_FILE"
+      exit 1
+    fi
+    RESOLVED_AGENT="omp"
+    ;;
+  claude)
+    if ! command -v claude >/dev/null 2>&1; then
+      echo "ERROR: Agen 'claude' dipilih tetapi binary 'claude' tidak ditemukan di PATH." | tee -a "$LOG_FILE"
+      echo "Saran: Install Claude Code CLI atau gunakan agen lain: --agent=omp / --agent=script / --agent=auto" | tee -a "$LOG_FILE"
+      exit 1
+    fi
+    RESOLVED_AGENT="claude"
+    ;;
+  cursor|cursor-agent)
+    if command -v cursor-agent >/dev/null 2>&1; then
+      RESOLVED_AGENT="cursor-agent"
+    elif command -v cursor >/dev/null 2>&1; then
+      RESOLVED_AGENT="cursor"
+    else
+      echo "ERROR: Agen 'cursor' dipilih tetapi binary 'cursor-agent' / 'cursor' tidak ditemukan di PATH." | tee -a "$LOG_FILE"
+      exit 1
+    fi
+    ;;
+  aider)
+    if ! command -v aider >/dev/null 2>&1; then
+      echo "ERROR: Agen 'aider' dipilih tetapi binary 'aider' tidak ditemukan di PATH." | tee -a "$LOG_FILE"
+      exit 1
+    fi
+    RESOLVED_AGENT="aider"
+    ;;
+  gemini|gemini-cli)
+    if command -v gemini-cli >/dev/null 2>&1; then
+      RESOLVED_AGENT="gemini-cli"
+    elif command -v gemini >/dev/null 2>&1; then
+      RESOLVED_AGENT="gemini"
+    else
+      echo "ERROR: Agen 'gemini' dipilih tetapi binary 'gemini' / 'gemini-cli' tidak ditemukan di PATH." | tee -a "$LOG_FILE"
+      exit 1
+    fi
+    ;;
+  codex|openai)
+    if command -v codex >/dev/null 2>&1; then
+      RESOLVED_AGENT="codex"
+    elif command -v openai >/dev/null 2>&1; then
+      RESOLVED_AGENT="openai"
+    else
+      echo "ERROR: Agen 'codex'/'openai' dipilih tetapi binary tidak ditemukan di PATH." | tee -a "$LOG_FILE"
+      exit 1
+    fi
+    ;;
+  script|python|direct|none|builtin)
+    RESOLVED_AGENT="script"
+    ;;
+  *)
+    echo "ERROR: Tipe agen '$AGENT_INPUT' tidak dikenali." | tee -a "$LOG_FILE"
+    echo "Pilihan yang didukung: auto, omp, claude, cursor, aider, gemini, codex, script" | tee -a "$LOG_FILE"
+    exit 1
+    ;;
+esac
 
-# 2. Validasi ketersediaan binary 'omp'
-if ! command -v omp >/dev/null 2>&1; then
-  echo "ERROR: Perintah 'omp' tidak ditemukan di PATH. Pastikan CLI omp telah terinstal." | tee -a "$LOG_FILE"
-  exit 1
+if [ -n "$AUTO_REASON" ]; then
+  echo -e "\n=== [$(date '+%Y-%m-%d %H:%M:%S')] Memulai Pipeline Generate Proposal Grossmart [Auto-Detect Agent: $RESOLVED_AGENT ($AUTO_REASON) & Render DOCX] ===" | tee -a "$LOG_FILE"
+else
+  echo -e "\n=== [$(date '+%Y-%m-%d %H:%M:%S')] Memulai Pipeline Generate Proposal Grossmart [Sync Agent: $RESOLVED_AGENT & Render DOCX] ===" | tee -a "$LOG_FILE"
 fi
-
 # 3. Validasi python3 dan python-docx
 if ! command -v python3 >/dev/null 2>&1; then
   echo "ERROR: Perintah 'python3' tidak ditemukan di PATH." | tee -a "$LOG_FILE"
@@ -156,8 +320,9 @@ mkdir -p "$BACKUP_DIR"
 cp "$TARGET_DIR"/*.md "$BACKUP_DIR/" 2>/dev/null || true
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Snapshot cadangan markdown diamankan ke '$BACKUP_DIR'." | tee -a "$LOG_FILE"
 
-# 8. SINKRONISASI KODE KE MARKDOWN MENGGUNAKAN OMP (AI AGENT)
-echo -e "\n--> [Fase 1/2] Menjalankan OMP untuk sinkronisasi kode riil ke berkas markdown proposal..." | tee -a "$LOG_FILE"
+# 8. SINKRONISASI KODE KE MARKDOWN MENGGUNAKAN MULTI-AGENT
+echo -e "\n--> [Fase 1/2] Menjalankan sinkronisasi kode riil ke berkas markdown proposal..." | tee -a "$LOG_FILE"
+echo "    Agen aktif: $RESOLVED_AGENT (permintaan: $AGENT_INPUT)" | tee -a "$LOG_FILE"
 
 SYNC_PROMPT="Lakukan sinkronisasi penuh status kode riil ke berkas proposal markdown di folder '$TARGET_DIR'.
 Instruksi Wajib:
@@ -175,19 +340,77 @@ Instruksi Wajib:
    Pastikan berkas '$DOCX_FILE' terbuat utuh dengan gambar dan icon cover terbaru.
 HANYA cetak satu baris persis string 'SYNC_COMPLETE' jika sinkronisasi markdown dan render Word selesai tanpa celah."
 
-TMP_OUTPUT=$(mktemp)
-omp --session-dir="$SESSION_DIR" $OMP_MODEL_FLAGS --auto-approve --mode json -p "$SYNC_PROMPT" 2>&1 | python3 "$SCRIPT_DIR/omp_stream_formatter.py" -s "$SESSION_DIR" -o "$TMP_OUTPUT" -l "$LOG_FILE"
-EXIT_CODE=${PIPESTATUS[0]}
-OUTPUT=$(cat "$TMP_OUTPUT" 2>/dev/null || echo "")
-rm -f "$TMP_OUTPUT"
+case "$RESOLVED_AGENT" in
+  omp)
+    mkdir -p "$SESSION_DIR"
+    TMP_OUTPUT=$(mktemp)
+    omp --session-dir="$SESSION_DIR" $OMP_MODEL_FLAGS --auto-approve --mode json -p "$SYNC_PROMPT" 2>&1 | python3 "$SCRIPT_DIR/omp_stream_formatter.py" -s "$SESSION_DIR" -o "$TMP_OUTPUT" -l "$LOG_FILE"
+    EXIT_CODE=${PIPESTATUS[0]}
+    OUTPUT=$(cat "$TMP_OUTPUT" 2>/dev/null || echo "")
+    rm -f "$TMP_OUTPUT"
+    ;;
+  claude)
+    echo "  [claude] Mengirim prompt sinkronisasi ke Claude Code CLI..." | tee -a "$LOG_FILE"
+    claude -p "$SYNC_PROMPT" --dangerously-skip-permissions 2>&1 | tee -a "$LOG_FILE" || claude -p "$SYNC_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  cursor-agent)
+    echo "  [cursor-agent] Mengirim prompt sinkronisasi ke Cursor Agent..." | tee -a "$LOG_FILE"
+    cursor-agent -p "$SYNC_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  cursor)
+    echo "  [cursor] Mengirim prompt sinkronisasi ke Cursor CLI..." | tee -a "$LOG_FILE"
+    cursor --print "$SYNC_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  aider)
+    echo "  [aider] Mengirim prompt sinkronisasi ke Aider..." | tee -a "$LOG_FILE"
+    aider --message "$SYNC_PROMPT" --yes-always --no-git 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  gemini-cli)
+    echo "  [gemini-cli] Mengirim prompt sinkronisasi ke Gemini CLI..." | tee -a "$LOG_FILE"
+    gemini-cli prompt "$SYNC_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  gemini)
+    echo "  [gemini] Mengirim prompt sinkronisasi ke Gemini..." | tee -a "$LOG_FILE"
+    gemini "$SYNC_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  codex)
+    echo "  [codex] Mengirim prompt sinkronisasi ke Codex..." | tee -a "$LOG_FILE"
+    codex exec "$SYNC_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  openai)
+    echo "  [openai] Mengirim prompt sinkronisasi ke OpenAI CLI..." | tee -a "$LOG_FILE"
+    openai api chat.completions.create -m gpt-4o -p "$SYNC_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+  script)
+    echo "  [script] Menjalankan engine sinkronisasi Python deterministik..." | tee -a "$LOG_FILE"
+    python3 "$SCRIPT_DIR/sync_code_to_proposal.py" 2>&1 | tee -a "$LOG_FILE"
+    EXIT_CODE=$?
+    ;;
+esac
 
-# 9. Fallback & Render Docs Assurance
-if [ ! -s "$DOCX_FILE" ]; then
-  echo -e "\n--> Menjalankan fallback generator dokumen Word..." | tee -a "$LOG_FILE"
-  python3 "$SCRIPT_DIR/generate_final_docx.py" 2>&1 | tee -a "$LOG_FILE" || true
+# 9. Rekonsiliasi & Penyelarasan Deterministik Pasca-Eksekusi Agen
+echo "--> Memverifikasi dan menyelaraskan metrik deterministik kode (models, tables, versions)..." | tee -a "$LOG_FILE"
+python3 "$SCRIPT_DIR/sync_code_to_proposal.py" 2>&1 | tee -a "$LOG_FILE"
+
+# 10. Jika mode --sync-only aktif, lewati kompilasi DOCX
+if [ "$SYNC_ONLY" = true ]; then
+  echo -e "\n[$(date '+%Y-%m-%d %H:%M:%S')] SUKSES: Sinkronisasi markdown proposal selesai (Mode --sync-only aktif, kompilasi DOCX dilewati)." | tee -a "$LOG_FILE"
+  echo "Durasi sinkronisasi: $(format_elapsed_time)." | tee -a "$LOG_FILE"
+  exit 0
 fi
 
-# 10. Validasi Fisik & Integritas Internal Berkas DOCX Pasca-Generate
+# 11. Render Dokumen Word (.docx)
+echo -e "\n--> [Fase 2/2] Mengompilasi dokumen Word (.docx) dari naskah proposal terbaru..." | tee -a "$LOG_FILE"
+python3 "$SCRIPT_DIR/generate_final_docx.py" 2>&1 | tee -a "$LOG_FILE" || true
+# 12. Validasi Fisik & Integritas Internal Berkas DOCX Pasca-Generate
 if [ -s "$DOCX_FILE" ]; then
   FILE_SIZE=$(wc -c < "$DOCX_FILE" | tr -d ' ')
   TOTAL_DURATION=$(format_elapsed_time)

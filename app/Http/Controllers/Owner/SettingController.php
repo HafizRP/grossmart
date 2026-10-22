@@ -52,7 +52,7 @@ class SettingController extends Controller
         AppSetting::set('store_phone', $request->store_phone);
         AppSetting::set('receipt_footer', $request->receipt_footer);
         AppSetting::set('cash_rounding_unit', $request->boolean('cash_rounding') ? '100' : '0');
-        AppSetting::set('cashier_idle_timeout_minutes', (string)$request->idle_timeout_minutes);
+        AppSetting::set('cashier_idle_timeout_minutes', (string) $request->idle_timeout_minutes);
 
         AuditLog::log('UPDATE', 'AppSetting', null, null, $request->all());
 

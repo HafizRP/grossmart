@@ -7,7 +7,6 @@ use App\Models\AuditLog;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductPriceTier;
-use App\Models\ProductUnitConversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -22,9 +21,10 @@ class ProductController extends Controller
     {
         $mapProduct = function ($prod) {
             $firstTier = $prod->priceTiers ? $prod->priceTiers->first() : null;
+
             return [
                 'id' => $prod->id,
-                'sku' => $prod->barcode ?? ('PRD-' . $prod->id),
+                'sku' => $prod->barcode ?? ('PRD-'.$prod->id),
                 'barcode' => $prod->barcode,
                 'name' => $prod->name,
                 'category_id' => $prod->category_id,
@@ -41,7 +41,19 @@ class ProductController extends Controller
             ];
         };
 
-        $products = Product::with(['category', 'priceTiers'])
+        $query = Product::with(['category', 'priceTiers']);
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('barcode', 'like', "%{$search}%");
+            });
+        }
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $products = (clone $query)
             ->orderBy('name')
             ->get()
             ->map($mapProduct)
@@ -53,7 +65,6 @@ class ProductController extends Controller
             ->get()
             ->map($mapProduct)
             ->all();
-
         $categories = Category::where('is_active', true)->get(['id', 'name']);
 
         return Inertia::render('Owner/Products/Index', [
@@ -124,7 +135,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'barcode' => 'nullable|string|max:255|unique:products,barcode,' . $product->id,
+            'barcode' => 'nullable|string|max:255|unique:products,barcode,'.$product->id,
             'category_id' => 'nullable|exists:categories,id',
             'unit' => 'nullable|string|max:50',
             'selling_price' => 'required|integer|min:0',

@@ -148,8 +148,8 @@ def sync_proposal_full(repo_root, stats):
         content
     )
     content = re.sub(
-        r"Sistem mengelola \d+ model Eloquent yang memetakan \d+ tabel domain bisnis \(plus \d+ tabel framework Laravel\)",
-        f"Sistem mengelola {num_models} model Eloquent yang memetakan {domain_tables} tabel domain bisnis (plus {framework_tables} tabel framework Laravel)",
+        r"Sistem mengelola \d+ model Eloquent yang memetakan \d+ tabel (?:kebutuhan domain warung|domain bisnis) \(plus \d+ tabel framework Laravel\)",
+        f"Sistem mengelola {num_models} model Eloquent yang memetakan {domain_tables} tabel kebutuhan domain warung (plus {framework_tables} tabel framework Laravel)",
         content
     )
     content = re.sub(

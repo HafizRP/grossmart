@@ -31,7 +31,7 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $username = $request->username ?? (explode('@', (string)$request->email)[0] . rand(100, 999));
+        $username = $request->username ?? (explode('@', (string) $request->email)[0].rand(100, 999));
 
         $request->validate([
             'name' => 'required|string|max:255',

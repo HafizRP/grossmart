@@ -7,10 +7,26 @@ import { sound } from '@/Utils/sound';
 import { ToastProvider } from '@/Components/UI/Toast';
 
 export interface ShiftCloseProps {
-  shiftId: number;
-  cashierName: string;
-  startTime: string;
+  shift?: {
+    id: number;
+    start_time: string;
+    cashier_name: string;
+  };
+  shiftId?: number;
+  cashierName?: string;
+  startTime?: string;
   isClosed?: boolean;
+  summary?: {
+    id: number;
+    start_time: string;
+    end_time?: string;
+    starting_cash: number;
+    total_cash_sales: number;
+    expected_cash_ending: number;
+    actual_cash_ending: number;
+    cash_difference: number;
+    notes?: string;
+  } | null;
   expectedCashEnding?: number;
   actualCashEnding?: number;
   cashDifference?: number;
@@ -18,15 +34,24 @@ export interface ShiftCloseProps {
 }
 
 export const ShiftClose: React.FC<ShiftCloseProps> = ({
+  shift,
   shiftId,
   cashierName,
   startTime,
   isClosed = false,
+  summary,
   expectedCashEnding,
   actualCashEnding,
   cashDifference,
   totalSalesCount = 0,
 }) => {
+  const activeShiftId = shift?.id ?? shiftId;
+  const activeCashierName = shift?.cashier_name ?? cashierName ?? 'Kasir';
+  const activeStartTime = shift?.start_time ?? startTime ?? '-';
+
+  const finalExpected = summary?.expected_cash_ending ?? expectedCashEnding ?? 0;
+  const finalActual = summary?.actual_cash_ending ?? actualCashEnding ?? 0;
+  const finalDiff = summary?.cash_difference ?? cashDifference ?? 0;
   const [actualCash, setActualCash] = useState<number>(0);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState<boolean>(false);
   const [denominationCounts, setDenominationCounts] = useState<DenominationCounts>({});
@@ -47,7 +72,7 @@ export const ShiftClose: React.FC<ShiftCloseProps> = ({
     sound.playChime();
     setIsSubmitting(true);
 
-    router.post(`/shifts/${shiftId}/close`, {
+    router.post('/pos/shifts/close', {
       actual_cash_ending: actualCash,
       denomination_details: Object.keys(denominationCounts).length > 0 ? denominationCounts : null,
       notes: notes.trim() || null,
@@ -77,7 +102,7 @@ export const ShiftClose: React.FC<ShiftCloseProps> = ({
               {isClosed ? 'Shift Kasir Berhasil Ditutup' : 'Tutup Kasir (Tutup Buta / Blind Count)'}
             </h2>
             <p className="text-sm sm:text-base font-bold text-slate-600">
-              Kasir: <strong className="text-slate-900">{cashierName}</strong> &bull; Mulai: {startTime}
+              Kasir: <strong className="text-slate-900">{activeCashierName}</strong> &bull; Mulai: {activeStartTime}
             </p>
           </div>
 
@@ -188,13 +213,13 @@ export const ShiftClose: React.FC<ShiftCloseProps> = ({
                 <div className="flex justify-between items-center text-sm font-bold text-slate-600">
                   <span>Uang Fisik Terhitung:</span>
                   <span className="text-slate-900 font-extrabold text-lg tabular-nums">
-                    {formatRupiah(actualCashEnding || 0)}
+                    {formatRupiah(finalActual)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-sm font-bold text-slate-600">
                   <span>Ekspektasi Saldo Sistem:</span>
                   <span className="text-slate-900 font-extrabold text-lg tabular-nums">
-                    {formatRupiah(expectedCashEnding || 0)}
+                    {formatRupiah(finalExpected)}
                   </span>
                 </div>
 
@@ -202,18 +227,18 @@ export const ShiftClose: React.FC<ShiftCloseProps> = ({
                   <span className="text-sm font-black uppercase text-slate-800">Selisih Kas Laci:</span>
                   <span
                     className={`text-xl font-black tabular-nums ${
-                      (cashDifference || 0) === 0
+                      finalDiff === 0
                         ? 'text-emerald-700'
-                        : (cashDifference || 0) > 0
+                        : finalDiff > 0
                         ? 'text-blue-700'
                         : 'text-rose-700'
                     }`}
                   >
-                    {(cashDifference || 0) === 0
+                    {finalDiff === 0
                       ? 'PAS (Rp 0)'
-                      : (cashDifference || 0) > 0
-                      ? `Lebih ${formatRupiah(cashDifference || 0)}`
-                      : `Kurang ${formatRupiah(Math.abs(cashDifference || 0))}`}
+                      : finalDiff > 0
+                      ? `Lebih ${formatRupiah(finalDiff)}`
+                      : `Kurang ${formatRupiah(Math.abs(finalDiff))}`}
                   </span>
                 </div>
               </div>
